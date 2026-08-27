@@ -1,0 +1,13 @@
+{
+  "name": "Minhas Criações GK",
+  "short_name": "Criações GK",
+  "description": "Um arquivo vivo de criações de Gustavo Giacoia Kumagai.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080908",
+  "theme_color": "#080908",
+  "icons": [
+    { "src": "/favicon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/favicon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

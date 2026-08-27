@@ -1,45 +1,92 @@
 # Minhas Criações GK
 
-Portfólio pessoal de Gustavo Giacoia Kumagai que reúne projetos, criações e experiências para além do desenvolvimento de software.
+Arquivo criativo de Gustavo Giacoia Kumagai. A versão 2 separa interface, conteúdo, animações, persistência e painel administrativo — o antigo `index.html` autocontido de aproximadamente 15 MB não faz mais parte da aplicação.
 
-O site apresenta trabalhos de conteúdo e mídia, identidade visual, sistemas de estudo, esporte, voluntariado, registros acadêmicos e projetos pessoais. A interface também oferece conteúdo em português e inglês.
+## O que existe agora
 
-## Tecnologias
-
-- HTML5
-- CSS3
-- JavaScript
-
-O projeto é uma página estática e autocontida: os recursos necessários para exibição estão empacotados no próprio arquivo `index.html`. Não há etapa de instalação ou build.
-
-## Executar localmente
-
-Você pode abrir o arquivo `index.html` diretamente no navegador. Para reproduzir um ambiente semelhante ao de produção, use um servidor HTTP local.
-
-Com Python:
-
-```bash
-python -m http.server 8000
-```
-
-Depois, acesse `http://localhost:8000`.
-
-## Deploy na Vercel
-
-1. Importe este repositório na Vercel.
-2. Em **Framework Preset**, selecione **Other**.
-3. Não defina comandos de build ou diretório de saída.
-4. Inicie o deploy.
-
-A página principal precisa se chamar `index.html` e permanecer na raiz do repositório. Assim, a Vercel consegue servi-la automaticamente na rota `/`.
+- Home bilíngue em React/Vinext, com conteúdo renderizado no servidor.
+- Wireframe procedural em Canvas 2D, sensível ao cursor e ao scroll.
+- Scroll suave com Lenis e narrativa com GSAP ScrollTrigger (`pin: true` no desktop).
+- Transições dark/light, métricas animadas, cards com parallax e tipografia cinética.
+- CMS próprio em `/admin` para criar, editar, destacar, ocultar, reordenar e excluir projetos.
+- Upload de imagens para R2; registros e ordem em D1.
+- Login do painel via ChatGPT, com autorização adicional por `ADMIN_EMAILS`.
+- Favicon GK em múltiplos tamanhos, Open Graph, Twitter Card, manifest, robots e sitemap.
+- Fallback local com todo o conteúdo original caso a base ainda não esteja disponível.
 
 ## Estrutura
 
 ```text
-.
-├── index.html  # Aplicação completa
-└── README.md   # Documentação do projeto
+app/
+  admin/                 painel administrativo
+  api/                   conteúdo público, CRUD e mídia
+  layout.tsx             metadados globais
+  page.tsx               home renderizada no servidor
+components/
+  admin/                 editor do CMS
+  motion/                canvas, Lenis e reveals
+  site/                  seções da experiência
+db/
+  bootstrap.ts           inicialização e seed idempotente
+  schema.ts              schema D1/Drizzle
+drizzle/                 migrations versionadas
+lib/
+  auth/                  autorização do painel
+  content/               tipos, fallback, validação e repositório
+public/
+  media/                 imagens e fontes extraídas do bundle antigo
+scripts/
+  extract-legacy-assets.mjs
+  generate-favicon.mjs
 ```
+
+## Desenvolvimento
+
+Requer Node.js 22.13 ou mais recente.
+
+```bash
+npm install
+npm run dev
+```
+
+O endereço local é mostrado no terminal. O ambiente de desenvolvimento do Sites fornece uma conta local para testar `/admin`.
+
+Comandos úteis:
+
+```bash
+npm run typecheck
+npm run lint
+npm run build
+npm run db:generate
+npm run assets:favicon
+```
+
+## Conteúdo e painel
+
+Na primeira execução com D1 vazio, os oito projetos atuais são inseridos automaticamente. O frontend mantém um fallback equivalente, por isso a página continua útil mesmo antes da base ser conectada.
+
+Em produção, configure pelo menos uma destas opções:
+
+```env
+ADMIN_EMAILS=seu-email@exemplo.com
+ADMIN_USER_IDS=id-estavel-da-conta-no-site
+```
+
+Use vírgulas para liberar mais de uma conta. Na publicação pelo Sites, o ID do proprietário pode ser configurado sem expor o e-mail. Sem uma lista, a versão de produção bloqueia todas as escritas e mostra uma instrução segura no painel.
+
+O formulário aceita imagens JPEG, PNG, WebP ou AVIF de até 8 MB. O arquivo vai para R2 e o caminho publicado é salvo no item do CMS.
+
+## Publicação e domínio
+
+O projeto está preparado para Sites com D1 e R2 declarados em `.openai/hosting.json`. O domínio `criacoes.gusgk.com.br` não deve ser apontado para a nova versão antes de a URL publicada ser validada. Enquanto isso, a versão já ligada à Vercel pode continuar no ar sem alteração de DNS.
+
+## Acessibilidade e desempenho
+
+- `prefers-reduced-motion` desativa scroll suave, pin e movimentos contínuos.
+- O canvas é decorativo; todo o conteúdo relevante permanece no DOM.
+- A resolução do canvas é limitada e ele pausa fora da viewport.
+- Imagens de projetos carregam sob demanda.
+- Links, botões e painel são navegáveis por teclado.
 
 ## Autor
 
