@@ -1,11 +1,9 @@
 node_modules/
 .next/
-.vinext/
 dist/
-.wrangler/
 .env
 .env.*
 !.env.example
 *.log
 *.tsbuildinfo
-.site-scaffold/
+.vercel/

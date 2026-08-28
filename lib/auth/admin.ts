@@ -1,35 +1,33 @@
-import { env } from 'cloudflare:workers';
-import { getChatGPTUser, requireChatGPTUser, type ChatGPTUser } from '@/app/chatgpt-auth';
+import { redirect } from 'next/navigation';
+import { adminEmails, auth, isAdminEmail } from '@/auth';
+
+export type AdminUser = { name: string; email: string };
 
 export type AdminAccess =
-  | { status: 'allowed'; user: ChatGPTUser }
-  | { status: 'unconfigured'; user: ChatGPTUser }
-  | { status: 'forbidden'; user: ChatGPTUser };
+  | { status: 'allowed'; user: AdminUser }
+  | { status: 'unconfigured'; user: null }
+  | { status: 'forbidden'; user: AdminUser }
+  | { status: 'unauthenticated' };
 
-function allowedEmails() {
-  return (env.ADMIN_EMAILS ?? '').split(',').map((email) => email.trim().toLowerCase()).filter(Boolean);
-}
-
-function allowedUserIds() {
-  return (env.ADMIN_USER_IDS ?? '').split(',').map((id) => id.trim()).filter(Boolean);
-}
-
-function evaluate(user: ChatGPTUser): AdminAccess {
-  const emails = allowedEmails();
-  const userIds = allowedUserIds();
-  if (!emails.length && !userIds.length) {
-    return process.env.NODE_ENV === 'development' ? { status: 'allowed', user } : { status: 'unconfigured', user };
+async function evaluate(): Promise<AdminAccess> {
+  if (adminEmails().length === 0) {
+    return process.env.NODE_ENV === 'development'
+      ? { status: 'allowed', user: { name: 'Desenvolvimento', email: 'dev@localhost' } }
+      : { status: 'unconfigured', user: null };
   }
-  return emails.includes(user.email.toLowerCase()) || userIds.includes(user.userId)
-    ? { status: 'allowed', user }
-    : { status: 'forbidden', user };
+  const session = await auth();
+  const email = session?.user?.email;
+  if (!email) return { status: 'unauthenticated' };
+  const user: AdminUser = { name: session.user?.name ?? email, email };
+  return isAdminEmail(email) ? { status: 'allowed', user } : { status: 'forbidden', user };
 }
 
-export async function requireAdminPage(): Promise<AdminAccess> {
-  return evaluate(await requireChatGPTUser('/admin'));
+export async function requireAdminPage(): Promise<Exclude<AdminAccess, { status: 'unauthenticated' }>> {
+  const access = await evaluate();
+  if (access.status === 'unauthenticated') redirect('/api/auth/signin?callbackUrl=%2Fadmin');
+  return access;
 }
 
-export async function getAdminApiAccess(): Promise<AdminAccess | { status: 'unauthenticated' }> {
-  const user = await getChatGPTUser();
-  return user ? evaluate(user) : { status: 'unauthenticated' };
+export async function getAdminApiAccess(): Promise<AdminAccess> {
+  return evaluate();
 }

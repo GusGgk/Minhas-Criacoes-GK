@@ -1,15 +1,12 @@
-import { env } from 'cloudflare:workers';
+import { asc, eq, max } from 'drizzle-orm';
 import { ensureDatabase } from '@/db/bootstrap';
+import { getDb } from '@/db/index';
+import { contentItems } from '@/db/schema';
 import { defaultContent } from './default-content';
 import type { Project, SiteContent } from './types';
 import type { EditableProject } from './validation';
 
-type ContentRow = {
-  id: string; slug: string; kind: 'project' | 'highlight'; position: number; visible: number; featured: number;
-  accent: string; year: string; tags_json: string; metrics_json: string | null; href: string | null;
-  title_pt: string; title_en: string; category_pt: string; category_en: string;
-  summary_pt: string; summary_en: string; image_url: string; alt_pt: string; alt_en: string;
-};
+type ContentRow = typeof contentItems.$inferSelect;
 
 function parseJson<T>(value: string | null, fallback: T): T {
   if (!value) return fallback;
@@ -22,26 +19,52 @@ function rowToProject(row: ContentRow): Project {
     slug: row.slug,
     kind: row.kind,
     position: row.position,
-    visible: Boolean(row.visible),
-    featured: Boolean(row.featured),
+    visible: row.visible,
+    featured: row.featured,
     accent: row.accent,
     year: row.year,
-    tags: parseJson(row.tags_json, []),
-    metrics: parseJson(row.metrics_json, undefined),
+    tags: parseJson(row.tagsJson, [] as string[]),
+    metrics: parseJson(row.metricsJson, undefined as Project['metrics']),
     href: row.href ?? undefined,
-    title: { pt: row.title_pt, en: row.title_en || row.title_pt },
-    category: { pt: row.category_pt, en: row.category_en || row.category_pt },
-    summary: { pt: row.summary_pt, en: row.summary_en || row.summary_pt },
-    image: row.image_url,
-    alt: { pt: row.alt_pt, en: row.alt_en || row.alt_pt },
+    title: { pt: row.titlePt, en: row.titleEn || row.titlePt },
+    category: { pt: row.categoryPt, en: row.categoryEn || row.categoryPt },
+    summary: { pt: row.summaryPt, en: row.summaryEn || row.summaryPt },
+    image: row.imageUrl,
+    alt: { pt: row.altPt, en: row.altEn || row.altPt },
+  };
+}
+
+function toRow(input: EditableProject, updatedAt: number) {
+  return {
+    slug: input.slug,
+    kind: input.kind,
+    visible: input.visible,
+    featured: input.featured,
+    accent: input.accent,
+    year: input.year,
+    tagsJson: JSON.stringify(input.tags),
+    metricsJson: input.metrics ? JSON.stringify(input.metrics) : null,
+    href: input.href ?? null,
+    titlePt: input.title.pt,
+    titleEn: input.title.en,
+    categoryPt: input.category.pt,
+    categoryEn: input.category.en,
+    summaryPt: input.summary.pt,
+    summaryEn: input.summary.en,
+    imageUrl: input.image,
+    altPt: input.alt.pt,
+    altEn: input.alt.en,
+    updatedAt,
   };
 }
 
 export async function getPublishedContent(): Promise<SiteContent> {
   try {
     await ensureDatabase();
-    const result = await env.DB.prepare('SELECT * FROM content_items WHERE visible = 1 ORDER BY position ASC').all<ContentRow>();
-    return { ...defaultContent, projects: result.results.map(rowToProject) };
+    const rows = await getDb().select().from(contentItems)
+      .where(eq(contentItems.visible, true))
+      .orderBy(asc(contentItems.position));
+    return { ...defaultContent, projects: rows.map(rowToProject) };
   } catch (error) {
     console.warn('Using bundled content fallback:', error);
     return defaultContent;
@@ -50,52 +73,49 @@ export async function getPublishedContent(): Promise<SiteContent> {
 
 export async function listAllProjects(): Promise<Project[]> {
   await ensureDatabase();
-  const result = await env.DB.prepare('SELECT * FROM content_items ORDER BY position ASC').all<ContentRow>();
-  return result.results.map(rowToProject);
+  const rows = await getDb().select().from(contentItems).orderBy(asc(contentItems.position));
+  return rows.map(rowToProject);
 }
 
 export async function createProject(input: EditableProject): Promise<Project> {
   await ensureDatabase();
-  const positionResult = await env.DB.prepare('SELECT COALESCE(MAX(position), -1) + 1 AS next_position FROM content_items').first<{ next_position: number }>();
+  const db = getDb();
+  const [{ value: maxPosition }] = await db.select({ value: max(contentItems.position) }).from(contentItems);
+  const position = (maxPosition ?? -1) + 1;
   const id = crypto.randomUUID();
-  const position = Number(positionResult?.next_position ?? 0);
   const now = Date.now();
-  await env.DB.prepare(`INSERT INTO content_items (
-    id, slug, kind, position, visible, featured, accent, year, tags_json, metrics_json, href,
-    title_pt, title_en, category_pt, category_en, summary_pt, summary_en, image_url, alt_pt, alt_en,
-    created_at, updated_at
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(
-    id, input.slug, input.kind, position, input.visible ? 1 : 0, input.featured ? 1 : 0,
-    input.accent, input.year, JSON.stringify(input.tags), input.metrics ? JSON.stringify(input.metrics) : null,
-    input.href ?? null, input.title.pt, input.title.en, input.category.pt, input.category.en,
-    input.summary.pt, input.summary.en, input.image, input.alt.pt, input.alt.en, now, now,
-  ).run();
-  return { ...input, id, position } as Project;
+  const [row] = await db.insert(contentItems)
+    .values({ id, position, createdAt: now, ...toRow(input, now) })
+    .returning();
+  return rowToProject(row);
 }
 
 export async function updateProject(id: string, input: EditableProject): Promise<Project> {
   await ensureDatabase();
-  const existing = await env.DB.prepare('SELECT position FROM content_items WHERE id = ?').bind(id).first<{ position: number }>();
+  const db = getDb();
+  const [existing] = await db.select({ position: contentItems.position })
+    .from(contentItems).where(eq(contentItems.id, id));
   if (!existing) throw new Error('NOT_FOUND');
-  await env.DB.prepare(`UPDATE content_items SET
-    slug = ?, kind = ?, visible = ?, featured = ?, accent = ?, year = ?, tags_json = ?, metrics_json = ?, href = ?,
-    title_pt = ?, title_en = ?, category_pt = ?, category_en = ?, summary_pt = ?, summary_en = ?, image_url = ?,
-    alt_pt = ?, alt_en = ?, updated_at = ? WHERE id = ?`).bind(
-    input.slug, input.kind, input.visible ? 1 : 0, input.featured ? 1 : 0, input.accent, input.year,
-    JSON.stringify(input.tags), input.metrics ? JSON.stringify(input.metrics) : null, input.href ?? null,
-    input.title.pt, input.title.en, input.category.pt, input.category.en, input.summary.pt, input.summary.en,
-    input.image, input.alt.pt, input.alt.en, Date.now(), id,
-  ).run();
-  return { ...input, id, position: existing.position } as Project;
+  const [row] = await db.update(contentItems)
+    .set(toRow(input, Date.now()))
+    .where(eq(contentItems.id, id))
+    .returning();
+  return rowToProject(row);
 }
 
 export async function deleteProject(id: string): Promise<void> {
   await ensureDatabase();
-  const result = await env.DB.prepare('DELETE FROM content_items WHERE id = ?').bind(id).run();
-  if (!result.meta.changes) throw new Error('NOT_FOUND');
+  const deleted = await getDb().delete(contentItems)
+    .where(eq(contentItems.id, id))
+    .returning({ id: contentItems.id });
+  if (deleted.length === 0) throw new Error('NOT_FOUND');
 }
 
 export async function reorderProjects(ids: string[]): Promise<void> {
   await ensureDatabase();
-  await env.DB.batch(ids.map((id, position) => env.DB.prepare('UPDATE content_items SET position = ?, updated_at = ? WHERE id = ?').bind(position, Date.now(), id)));
+  const db = getDb();
+  const now = Date.now();
+  await Promise.all(ids.map((id, position) => db.update(contentItems)
+    .set({ position, updatedAt: now })
+    .where(eq(contentItems.id, id))));
 }

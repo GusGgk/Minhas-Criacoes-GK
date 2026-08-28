@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ item: await createProject(input) }, { status: 201 });
   } catch (error) {
     if (error instanceof ValidationError) return NextResponse.json({ error: error.message }, { status: 400 });
-    if (String(error).includes('UNIQUE')) return NextResponse.json({ error: 'Este slug já está em uso.' }, { status: 409 });
+    if (/UNIQUE|duplicate key/i.test(String(error))) return NextResponse.json({ error: 'Este slug já está em uso.' }, { status: 409 });
     throw error;
   }
 }

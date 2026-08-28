@@ -1,7 +1,9 @@
-import { env } from 'cloudflare:workers';
+import { put } from '@vercel/blob';
 import { NextResponse } from 'next/server';
-import { getAdminApiAccess } from '@/lib/auth/admin';
 import { ensureDatabase } from '@/db/bootstrap';
+import { getDb } from '@/db/index';
+import { mediaAssets } from '@/db/schema';
+import { getAdminApiAccess } from '@/lib/auth/admin';
 
 const allowedTypes = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/avif']);
 const maxBytes = 8 * 1024 * 1024;
@@ -21,14 +23,23 @@ export async function POST(request: Request) {
 
   const cleanName = file.name.toLowerCase().replace(/[^a-z0-9._-]+/g, '-').slice(-90) || 'imagem';
   const id = crypto.randomUUID();
-  const key = `uploads/${new Date().getUTCFullYear()}/${id}-${cleanName}`;
-  await env.FILES.put(key, await file.arrayBuffer(), {
-    httpMetadata: { contentType: file.type, cacheControl: 'public, max-age=31536000, immutable' },
-    customMetadata: { originalName: file.name },
+  const pathname = `uploads/${new Date().getUTCFullYear()}/${id}-${cleanName}`;
+  const blob = await put(pathname, file, {
+    access: 'public',
+    contentType: file.type,
+    cacheControlMaxAge: 31536000,
   });
-  await ensureDatabase();
-  await env.DB.prepare('INSERT INTO media_assets (id, storage_key, filename, content_type, size, created_at) VALUES (?, ?, ?, ?, ?, ?)')
-    .bind(id, key, file.name, file.type, file.size, Date.now()).run();
 
-  return NextResponse.json({ id, url: `/api/media/${key}` }, { status: 201 });
+  await ensureDatabase();
+  await getDb().insert(mediaAssets).values({
+    id,
+    storageKey: blob.pathname,
+    url: blob.url,
+    filename: file.name,
+    contentType: file.type,
+    size: file.size,
+    createdAt: Date.now(),
+  });
+
+  return NextResponse.json({ id, url: blob.url }, { status: 201 });
 }

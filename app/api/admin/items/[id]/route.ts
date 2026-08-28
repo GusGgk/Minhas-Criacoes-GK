@@ -20,7 +20,7 @@ export async function PATCH(request: Request, context: Context) {
   } catch (error) {
     if (error instanceof ValidationError) return NextResponse.json({ error: error.message }, { status: 400 });
     if (String(error).includes('NOT_FOUND')) return NextResponse.json({ error: 'Item não encontrado.' }, { status: 404 });
-    if (String(error).includes('UNIQUE')) return NextResponse.json({ error: 'Este slug já está em uso.' }, { status: 409 });
+    if (/UNIQUE|duplicate key/i.test(String(error))) return NextResponse.json({ error: 'Este slug já está em uso.' }, { status: 409 });
     throw error;
   }
 }
