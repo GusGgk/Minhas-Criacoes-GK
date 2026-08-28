@@ -5,6 +5,7 @@ import { SmoothScroll } from '@/components/motion/SmoothScroll';
 import { Hero } from './Hero';
 import { MetricsSection } from './MetricsSection';
 import { PinnedNarrative } from './PinnedNarrative';
+import { ChaptersSection } from './ChaptersSection';
 import { ProjectArchive } from './ProjectArchive';
 import { Footer } from './Footer';
 import type { Locale, SiteContent } from '@/lib/content/types';
@@ -31,13 +32,16 @@ export function CreationsExperience({ content }: { content: SiteContent }) {
     return next;
   });
 
+  const coveredSlugs = content.chapters.flatMap((chapter) => chapter.coveredSlugs);
+
   return (
     <SmoothScroll>
       <main className="site-shell">
         <Hero locale={locale} onToggleLocale={toggleLocale} content={content} />
         <MetricsSection locale={locale} metrics={content.metrics} />
         <PinnedNarrative locale={locale} steps={content.story} />
-        <ProjectArchive locale={locale} projects={content.projects} />
+        <ChaptersSection chapters={content.chapters} steps={content.story} locale={locale} />
+        <ProjectArchive locale={locale} projects={content.projects} coveredSlugs={coveredSlugs} />
         <Footer key={locale} locale={locale} />
       </main>
     </SmoothScroll>

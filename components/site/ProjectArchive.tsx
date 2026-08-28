@@ -39,9 +39,17 @@ function ProjectCard({ project, locale, large = false }: { project: Project; loc
   );
 }
 
-export function ProjectArchive({ locale, projects }: { locale: Locale; projects: Project[] }) {
+/**
+ * Closing section for whatever the CMS holds that no chapter tells in full.
+ * Everything already covered by a chapter is skipped here, so the page never
+ * repeats the same project twice.
+ */
+export function ProjectArchive({ locale, projects, coveredSlugs }: { locale: Locale; projects: Project[]; coveredSlugs: string[] }) {
   const sectionRef = useRef<HTMLElement>(null);
-  const visible = projects.filter((project) => project.visible).sort((a, b) => a.position - b.position);
+  const covered = new Set(coveredSlugs);
+  const visible = projects
+    .filter((project) => project.visible && !covered.has(project.slug))
+    .sort((a, b) => a.position - b.position);
   const featured = visible.filter((project) => project.featured);
   const regular = visible.filter((project) => !project.featured);
 
@@ -65,19 +73,36 @@ export function ProjectArchive({ locale, projects }: { locale: Locale; projects:
   }, [projects]);
 
   return (
-    <section ref={sectionRef} className="projects" aria-labelledby="projects-title">
+    <section ref={sectionRef} id="arquivo-aberto" className="projects" aria-labelledby="projects-title">
       <header className="projects__header">
-        <p className="section-kicker">{locale === 'pt' ? 'O QUE JÁ SAIU DA CABEÇA' : 'THINGS THAT MADE IT OUT OF MY HEAD'}</p>
-        <h2 id="projects-title">{locale === 'pt' ? 'Sério, estranho, útil ou só divertido.' : 'Serious, strange, useful or simply fun.'}</h2>
-        <p>{locale === 'pt' ? 'Aqui cabem o canal que alcançou milhões, um jogo cheio de piadas internas, sistemas para estudar e lembranças que eu quis guardar.' : 'There is room here for a channel that reached millions, a game full of inside jokes, systems for studying and memories I wanted to keep.'}</p>
+        <p className="section-kicker">{locale === 'pt' ? 'AINDA TEM COISA VINDO' : 'MORE IS COMING'}</p>
+        <h2 id="projects-title">
+          {visible.length
+            ? (locale === 'pt' ? 'Recém-saído do forno.' : 'Fresh out of the oven.')
+            : (locale === 'pt' ? 'A próxima criação.' : 'The next thing I make.')}
+        </h2>
+        <p>
+          {visible.length
+            ? (locale === 'pt' ? 'Aparecem aqui assim que ficam prontas. Quando a história cresce o bastante, ganham uma seção só delas.' : 'They show up here as soon as they are done. When the story grows enough, they get a section of their own.')
+            : (locale === 'pt' ? 'Vou colocando aqui o que for ficando pronto. Por enquanto, tudo o que existe já está contado lá em cima.' : 'I add new work here as it gets done. For now, everything that exists is already told above.')}
+        </p>
       </header>
 
-      <div className="projects__featured">
-        {featured.map((project) => <ProjectCard key={project.id} project={project} locale={locale} large />)}
-      </div>
-      <div className="projects__grid">
-        {regular.map((project) => <ProjectCard key={project.id} project={project} locale={locale} />)}
-      </div>
+      {visible.length > 0 ? (
+        <>
+          <div className="projects__featured">
+            {featured.map((project) => <ProjectCard key={project.id} project={project} locale={locale} large />)}
+          </div>
+          <div className="projects__grid">
+            {regular.map((project) => <ProjectCard key={project.id} project={project} locale={locale} />)}
+          </div>
+        </>
+      ) : (
+        <div className="projects__empty">
+          <span aria-hidden="true">+</span>
+          <p>{locale === 'pt' ? 'lugar guardado pra próxima' : 'space saved for the next one'}</p>
+        </div>
+      )}
     </section>
   );
 }

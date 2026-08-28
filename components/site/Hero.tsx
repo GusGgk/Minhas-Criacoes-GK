@@ -14,7 +14,7 @@ export function Hero({ locale, onToggleLocale, content }: { locale: Locale; onTo
         <div className="topbar__meta" aria-hidden="true">
           <span>SÃO PAULO · BR</span>
           <span className="status-dot" />
-          <span>{locale === 'pt' ? 'SEMPRE INVENTANDO ALGO' : 'ALWAYS MAKING SOMETHING'}</span>
+          <span>{locale === 'pt' ? 'SEMPRE FAZENDO ALGO' : 'ALWAYS MAKING SOMETHING'}</span>
         </div>
         <div className="topbar__actions">
           <button
@@ -27,7 +27,7 @@ export function Hero({ locale, onToggleLocale, content }: { locale: Locale; onTo
             <span>/</span>
             <span className={locale === 'en' ? 'is-active' : ''}>EN</span>
           </button>
-          <a className="menu-link" href="#arquivo">{locale === 'pt' ? 'ARQUIVO' : 'ARCHIVE'} <span>↘</span></a>
+          <a className="menu-link" href="#capitulos">{locale === 'pt' ? 'VER AS CRIAÇÕES' : 'SEE THE WORK'} <span>↘</span></a>
         </div>
       </header>
 
@@ -37,8 +37,8 @@ export function Hero({ locale, onToggleLocale, content }: { locale: Locale; onTo
           <h1>{hero.title[locale]}</h1>
           <p className="hero__lead">{hero.lead[locale]}</p>
           <div className="hero__cta-row">
-            <a className="primary-cta" href="#arquivo">
-              <span>{locale === 'pt' ? 'EXPLORAR O ARQUIVO' : 'EXPLORE THE ARCHIVE'}</span>
+            <a className="primary-cta" href="#capitulos">
+              <span>{locale === 'pt' ? 'COMEÇAR A VER' : 'START LOOKING'}</span>
               <i aria-hidden="true">↘</i>
             </a>
             <span className="hero__hint">{locale === 'pt' ? 'Mova o cursor' : 'Move your cursor'}</span>
@@ -49,11 +49,12 @@ export function Hero({ locale, onToggleLocale, content }: { locale: Locale; onTo
           <PrismCanvas locale={locale} />
         </div>
 
-        <div className="hero__index" aria-label={locale === 'pt' ? 'Resumo do arquivo' : 'Archive summary'}>
-          <span>01 — {locale === 'pt' ? 'IDEIAS' : 'IDEAS'}</span>
-          <span>02 — {locale === 'pt' ? 'TESTES' : 'EXPERIMENTS'}</span>
-          <span>03 — {locale === 'pt' ? 'MEMÓRIAS' : 'MEMORIES'}</span>
-          <span>04 — {locale === 'pt' ? 'PROJETOS' : 'PROJECTS'}</span>
+        <div className="hero__index" aria-label={locale === 'pt' ? 'As sete frentes' : 'The seven fronts'}>
+          {content.chapters.map((chapter) => (
+            <a key={chapter.id} href={`#${chapter.anchor}`}>
+              {chapter.index} — {chapter.nav[locale].toUpperCase()}
+            </a>
+          ))}
         </div>
       </section>
 

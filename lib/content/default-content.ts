@@ -1,57 +1,59 @@
+import { chapters } from './chapters';
 import type { SiteContent } from './types';
 
 export const defaultContent: SiteContent = {
   hero: {
-    eyebrow: { pt: 'CADERNO ABERTO · 2026', en: 'OPEN NOTEBOOK · 2026' },
+    eyebrow: { pt: 'CRIAÇÕES DO GUSTAVO · 2026', en: 'GUSTAVO’S MAKES · 2026' },
     title: {
-      pt: 'Crio coisas que não cabem numa só caixa.',
-      en: 'I make things that do not fit in one box.',
+      pt: 'Tudo o que eu quis ver existindo.',
+      en: 'Everything I wanted to see exist.',
     },
     lead: {
-      pt: 'Este é o lugar onde junto ideias sérias, testes aleatórios, projetos pessoais, fases da vida e coisas que fiz só porque parecia divertido.',
-      en: 'This is where I gather serious ideas, random experiments, personal projects, chapters of life and things I made simply because they sounded fun.',
+      pt: 'Crio em várias frentes, e nem tudo tem a ver com programar: um canal de futebol com 26 milhões de visualizações, uma marca que ajudei a construir do zero, meus estudos organizados do meu jeito, uma fase de atleta, um dia de voluntariado numa escola pública e coisas feitas rindo com os amigos.',
+      en: 'I create on several fronts, and not all of it has to do with code: a football channel with 26 million views, a brand I helped build from scratch, my studies organised my own way, a phase as an athlete, a volunteering day at a public school and things made laughing with friends.',
     },
   },
+  chapters,
   metrics: [
-    { id: 'fronts', value: '07', label: { pt: 'territórios que já explorei', en: 'territories explored' } },
-    { id: 'views', value: '26,6 mi', label: { pt: 'vezes que algo encontrou alguém', en: 'times something found someone' } },
-    { id: 'systems', value: '02', label: { pt: 'jeitos de organizar o caos', en: 'ways of organizing chaos' } },
-    { id: 'languages', value: 'PT/EN', label: { pt: 'idiomas da mesma curiosidade', en: 'languages for the same curiosity' } },
+    { id: 'fronts', value: '07', label: { pt: 'frentes que eu toco ao mesmo tempo', en: 'fronts I keep going at once' } },
+    { id: 'views', value: '26,6 mi', label: { pt: 'meu sonho de ser youtuber, em visualizações', en: 'my dream of being a youtuber, in views' } },
+    { id: 'systems', value: '02', label: { pt: 'sistemas pra eu não esquecer o que estudo', en: 'systems so I never lose what I study' } },
+    { id: 'projects', value: '01', label: { pt: 'site feito de presente, sem cliente nem prazo', en: 'site made as a gift, no client, no deadline' } },
   ],
   story: [
     {
       id: 'curiosity', index: '01',
-      eyebrow: { pt: 'UMA FAÍSCA', en: 'A SPARK' },
+      eyebrow: { pt: 'COMEÇOU COM UMA DÚVIDA', en: 'IT STARTED AS A QUESTION' },
       title: { pt: 'Curiosidade', en: 'Curiosity' },
-      body: { pt: 'Alguma coisa me intriga e eu preciso descobrir o que acontece se eu seguir a ideia.', en: 'Something intrigues me and I need to find out what happens if I follow the idea.' },
+      body: { pt: 'Abri o Canal Decisão só pra ver se alguém assistiria. Trezentos e vinte vídeos depois, eu ainda quero saber.', en: 'I started Canal Decisão just to see if anyone would watch. Three hundred and twenty videos later, I still want to know.' },
       stat: 'WHY?', accent: '#ff6b4a',
     },
     {
       id: 'play', index: '02',
-      eyebrow: { pt: 'SEM PRECISAR JUSTIFICAR', en: 'NO NEED TO EXPLAIN' },
+      eyebrow: { pt: 'SEM PRETENSÃO NENHUMA', en: 'NO AMBITION AT ALL' },
       title: { pt: 'Brincadeira', en: 'Play' },
-      body: { pt: 'Misturo ferramentas, referências e formatos sem exigir que o resultado seja útil.', en: 'I mix tools, references and formats without demanding that the result be useful.' },
+      body: { pt: 'O ABIMABALL nasceu de piada interna com os amigos. Foi bem mais divertido de programar do que de jogar.', en: 'ABIMABALL came out of an inside joke with friends. It was far more fun to build than to play.' },
       stat: 'PLAY', accent: '#76d7c4',
     },
     {
       id: 'deep-dive', index: '03',
       eyebrow: { pt: 'QUANDO A IDEIA FICA', en: 'WHEN THE IDEA STICKS' },
       title: { pt: 'Mergulho', en: 'Deep dive' },
-      body: { pt: 'Volto, erro, refaço, pesquiso demais e vejo até onde aquela coisa quer ir.', en: 'I return, fail, remake, research too much and see how far that thing wants to go.' },
+      body: { pt: 'O manual da Mirtillo já está na versão 2.0. Toda revisão mexe em posicionamento, cor e jeito de falar.', en: 'The Mirtillo brand manual is already on version 2.0. Every pass touches positioning, colour and tone of voice.' },
       stat: 'AGAIN', accent: '#b7a6ff',
     },
     {
       id: 'affection', index: '04',
-      eyebrow: { pt: 'PORQUE IMPORTA PARA MIM', en: 'BECAUSE IT MATTERS TO ME' },
+      eyebrow: { pt: 'POR UMA PESSOA', en: 'FOR ONE PERSON' },
       title: { pt: 'Afeto', en: 'Affection' },
-      body: { pt: 'Algumas coisas existem por uma pessoa, uma fase, uma piada interna ou uma lembrança.', en: 'Some things exist for a person, a chapter of my life, an inside joke or a memory.' },
+      body: { pt: 'Fiz um site inteiro de presente pra alguém importante. Sem cliente, sem prazo e sem outro motivo.', en: 'I built a whole website as a gift for someone important. No client, no deadline and no other reason.' },
       stat: '<3', accent: '#f6c760',
     },
     {
       id: 'trace', index: '05',
-      eyebrow: { pt: 'PARA NÃO PASSAR EM BRANCO', en: 'SO IT DOES NOT DISAPPEAR' },
+      eyebrow: { pt: 'PRA NÃO SUMIR', en: 'SO IT DOES NOT VANISH' },
       title: { pt: 'Rastro', en: 'A trace' },
-      body: { pt: 'Se ficou pronto, ótimo. Se virou aprendizado, também. Os dois merecem um lugar aqui.', en: 'Whether it became something finished or simply taught me something, it deserves a place here.' },
+      body: { pt: 'As fotos de quando eu jogava futebol não viraram projeto nenhum. Mesmo assim, guardei todas.', en: 'The photos from when I played football never became a project. I kept every one of them anyway.' },
       stat: 'KEEP', accent: '#ff7fac',
     },
   ],
