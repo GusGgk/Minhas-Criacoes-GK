@@ -58,11 +58,11 @@ export function PinnedNarrative({ locale, steps }: { locale: Locale; steps: Stor
   const current = steps[active];
 
   return (
-    <section ref={sectionRef} className="story" aria-labelledby="story-title">
+    <section ref={sectionRef} id="motivos" className="story" aria-labelledby="story-title">
       <div className="story__rail">
         <div className="story__heading">
-          <p className="section-kicker">{locale === 'pt' ? 'NÃO É UM PROCESSO' : 'THIS IS NOT A PROCESS'}</p>
-          <h2 id="story-title">{locale === 'pt' ? 'Cinco motivos para fazer uma coisa.' : 'Five reasons to make a thing.'}</h2>
+          <p className="section-kicker">{locale === 'pt' ? 'POR QUE EU FAÇO' : 'WHY I MAKE THINGS'}</p>
+          <h2 id="story-title">{locale === 'pt' ? 'Cinco motivos, e uma coisa minha em cada um.' : 'Five reasons, and something of mine behind each.'}</h2>
         </div>
         {steps.map((step, index) => (
           <article key={step.id} className={`story-step ${active === index ? 'is-active' : ''}`} data-step={index}>

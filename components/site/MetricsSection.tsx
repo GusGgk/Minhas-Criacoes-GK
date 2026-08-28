@@ -37,15 +37,15 @@ export function MetricsSection({ locale, metrics }: { locale: Locale; metrics: M
     <section ref={sectionRef} id="arquivo" className="metrics" aria-labelledby="metrics-title">
       <div className="metrics__marquee" aria-hidden="true">
         <div className="metrics__marquee-inner">
-          <span>IDEIAS EM MOVIMENTO</span><i>✦</i><span>IDEAS IN MOTION</span><i>✦</i>
-          <span>IDEIAS EM MOVIMENTO</span><i>✦</i><span>IDEAS IN MOTION</span><i>✦</i>
+          <span>CRIAÇÕES DO GUSTAVO</span><i>✦</i><span>GUSTAVO&apos;S MAKES</span><i>✦</i>
+          <span>CRIAÇÕES DO GUSTAVO</span><i>✦</i><span>GUSTAVO&apos;S MAKES</span><i>✦</i>
         </div>
       </div>
       <div className="metrics__inner">
         <div className="section-intro section-intro--dark">
           <p className="section-kicker">{locale === 'pt' ? 'UM ARQUIVO SEM HIERARQUIA' : 'AN ARCHIVE WITHOUT RANKINGS'}</p>
           <h2 id="metrics-title">{locale === 'pt' ? 'Algumas coisas cresceram. Outras só precisavam existir.' : 'Some things grew. Others simply needed to exist.'}</h2>
-          <p>{locale === 'pt' ? 'Aqui, alcance, afeto, aprendizado e diversão dividem a mesma prateleira.' : 'Here, reach, affection, learning and fun all share the same shelf.'}</p>
+          <p>{locale === 'pt' ? 'Aqui, alcance, afeto, aprendizado e diversão dividem a mesma prateleira.' : 'Here, reach, affection, learning and fun share the same shelf.'}</p>
         </div>
         <div className="metrics__grid">
           {metrics.map((metric, index) => (

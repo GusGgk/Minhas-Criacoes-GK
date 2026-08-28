@@ -4,7 +4,7 @@ import './globals.css';
 export const metadata: Metadata = {
   metadataBase: new URL('https://criacoes.gusgk.com.br'),
   title: 'Minhas Criações GK — Gustavo Giacoia Kumagai',
-  description: 'Um espaço pessoal para ideias, experimentos, projetos, memórias e coisas feitas por curiosidade — terminadas ou não.',
+  description: 'As criações de Gustavo Giacoia Kumagai: sete frentes de trabalho e de vida, com as fotos e os registros que cada uma deixou.',
   authors: [{ name: 'Gustavo Giacoia Kumagai', url: 'https://gustavo-giacoia.vercel.app/' }],
   creator: 'Gustavo Giacoia Kumagai',
   alternates: { canonical: '/' },
@@ -15,13 +15,13 @@ export const metadata: Metadata = {
     url: '/',
     siteName: 'Minhas Criações GK',
     title: 'Minhas Criações GK — Gustavo Giacoia Kumagai',
-    description: 'Coisas que eu só quis ver existindo.',
-    images: [{ url: '/og.png', width: 1672, height: 941, alt: 'Minhas Criações GK — Coisas que eu só quis ver existindo.' }],
+    description: 'Tudo o que eu quis ver existindo.',
+    images: [{ url: '/og.png', width: 1672, height: 941, alt: 'Minhas Criações GK — tudo o que eu quis ver existindo.' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Minhas Criações GK',
-    description: 'Coisas que eu só quis ver existindo.',
+    description: 'Tudo o que eu quis ver existindo.',
     images: ['/og.png'],
   },
   icons: {
