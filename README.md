@@ -1,6 +1,6 @@
 # Minhas Criações GK
 
-Arquivo criativo de Gustavo Giacoia Kumagai. A versão 2 separa interface, conteúdo, animações, persistência e painel administrativo — o antigo `index.html` autocontido de aproximadamente 15 MB não faz mais parte da aplicação.
+Espaço pessoal de criatividade de Gustavo Giacoia Kumagai: ideias sérias, testes aleatórios, projetos, memórias e coisas feitas simplesmente pela vontade de vê-las existir. A versão 2 separa interface, conteúdo, animações, persistência e painel administrativo — o antigo `index.html` autocontido de aproximadamente 15 MB não faz mais parte da aplicação.
 
 ## O que existe agora
 

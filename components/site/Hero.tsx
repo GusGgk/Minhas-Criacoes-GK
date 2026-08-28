@@ -14,7 +14,7 @@ export function Hero({ locale, onToggleLocale, content }: { locale: Locale; onTo
         <div className="topbar__meta" aria-hidden="true">
           <span>SÃO PAULO · BR</span>
           <span className="status-dot" />
-          <span>{locale === 'pt' ? 'DISPONÍVEL PARA CRIAR' : 'AVAILABLE TO CREATE'}</span>
+          <span>{locale === 'pt' ? 'SEMPRE INVENTANDO ALGO' : 'ALWAYS MAKING SOMETHING'}</span>
         </div>
         <div className="topbar__actions">
           <button
@@ -50,10 +50,10 @@ export function Hero({ locale, onToggleLocale, content }: { locale: Locale; onTo
         </div>
 
         <div className="hero__index" aria-label={locale === 'pt' ? 'Resumo do arquivo' : 'Archive summary'}>
-          <span>01 — {locale === 'pt' ? 'MÍDIA' : 'MEDIA'}</span>
-          <span>02 — {locale === 'pt' ? 'MARCA' : 'BRAND'}</span>
-          <span>03 — {locale === 'pt' ? 'SISTEMAS' : 'SYSTEMS'}</span>
-          <span>04 — {locale === 'pt' ? 'IMPACTO' : 'IMPACT'}</span>
+          <span>01 — {locale === 'pt' ? 'IDEIAS' : 'IDEAS'}</span>
+          <span>02 — {locale === 'pt' ? 'TESTES' : 'EXPERIMENTS'}</span>
+          <span>03 — {locale === 'pt' ? 'MEMÓRIAS' : 'MEMORIES'}</span>
+          <span>04 — {locale === 'pt' ? 'PROJETOS' : 'PROJECTS'}</span>
         </div>
       </section>
 

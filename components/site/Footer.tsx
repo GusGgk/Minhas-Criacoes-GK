@@ -7,7 +7,7 @@ const glyphs = 'GK+*01/<>#';
 
 export function Footer({ locale }: { locale: Locale }) {
   const ref = useRef<HTMLElement>(null);
-  const finalText = locale === 'pt' ? 'VAMOS CRIAR ALGO?' : 'SHALL WE MAKE SOMETHING?';
+  const finalText = locale === 'pt' ? 'ME CONTA UMA IDEIA ESTRANHA?' : 'TELL ME A STRANGE IDEA?';
   const [scrambled, setScrambled] = useState(finalText);
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export function Footer({ locale }: { locale: Locale }) {
     <footer ref={ref} className="footer">
       <div className="footer__top">
         <p>GUSTAVO GIACOIA KUMAGAI · 2026</p>
-        <a href="https://gustavo-giacoia.vercel.app/" target="_blank" rel="noreferrer">{locale === 'pt' ? 'PORTFÓLIO TÉCNICO ↗' : 'TECH PORTFOLIO ↗'}</a>
+        <a href="https://gustavo-giacoia.vercel.app/" target="_blank" rel="noreferrer">{locale === 'pt' ? 'MEU LADO TÉCNICO ↗' : 'MY TECHNICAL SIDE ↗'}</a>
       </div>
       <a className="footer__cta" href="mailto:contato@gusgk.com.br" aria-label={finalText}>
         <span aria-hidden="true">{scrambled}</span>
@@ -47,7 +47,7 @@ export function Footer({ locale }: { locale: Locale }) {
       </a>
       <div className="footer__bottom">
         <span>MINHAS CRIAÇÕES GK</span>
-        <span>{locale === 'pt' ? 'FEITO COM CURIOSIDADE' : 'BUILT WITH CURIOSITY'}</span>
+        <span>{locale === 'pt' ? 'SEM NICHO. COM CURIOSIDADE.' : 'NO NICHE. JUST CURIOSITY.'}</span>
         <a href="#top">{locale === 'pt' ? 'VOLTAR AO TOPO ↑' : 'BACK TO TOP ↑'}</a>
       </div>
     </footer>

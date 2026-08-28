@@ -43,9 +43,9 @@ export function MetricsSection({ locale, metrics }: { locale: Locale; metrics: M
       </div>
       <div className="metrics__inner">
         <div className="section-intro section-intro--dark">
-          <p className="section-kicker">{locale === 'pt' ? 'O ARQUIVO EM NÚMEROS' : 'THE ARCHIVE IN NUMBERS'}</p>
-          <h2 id="metrics-title">{locale === 'pt' ? 'Sete frentes. Um mesmo impulso.' : 'Seven fields. One impulse.'}</h2>
-          <p>{locale === 'pt' ? 'Cada número abre uma história — não um dashboard.' : 'Every number opens a story — not a dashboard.'}</p>
+          <p className="section-kicker">{locale === 'pt' ? 'UM ARQUIVO SEM HIERARQUIA' : 'AN ARCHIVE WITHOUT RANKINGS'}</p>
+          <h2 id="metrics-title">{locale === 'pt' ? 'Algumas coisas cresceram. Outras só precisavam existir.' : 'Some things grew. Others simply needed to exist.'}</h2>
+          <p>{locale === 'pt' ? 'Aqui, alcance, afeto, aprendizado e diversão dividem a mesma prateleira.' : 'Here, reach, affection, learning and fun all share the same shelf.'}</p>
         </div>
         <div className="metrics__grid">
           {metrics.map((metric, index) => (

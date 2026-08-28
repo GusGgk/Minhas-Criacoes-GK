@@ -188,10 +188,10 @@ export function PrismCanvas({ locale }: { locale: Locale }) {
     <div ref={wrapRef} className="prism" aria-hidden="true">
       <div className="prism__halo" />
       <canvas ref={canvasRef} className="prism__canvas" />
-      <span className="prism__label prism__label--top">{locale === 'pt' ? 'IDEIA' : 'IDEA'} / 01</span>
-      <span className="prism__label prism__label--right">{locale === 'pt' ? 'MOVIMENTO' : 'MOTION'} / 04</span>
-      <span className="prism__label prism__label--bottom">{locale === 'pt' ? 'ENTREGA' : 'DELIVERY'} / 05</span>
-      <span className="prism__label prism__label--left">{locale === 'pt' ? 'SISTEMA' : 'SYSTEM'} / 02</span>
+      <span className="prism__label prism__label--top">{locale === 'pt' ? 'CURIOSIDADE' : 'CURIOSITY'} / 01</span>
+      <span className="prism__label prism__label--right">{locale === 'pt' ? 'AFETO' : 'AFFECTION'} / 04</span>
+      <span className="prism__label prism__label--bottom">{locale === 'pt' ? 'RASTRO' : 'TRACE'} / 05</span>
+      <span className="prism__label prism__label--left">{locale === 'pt' ? 'BRINCADEIRA' : 'PLAY'} / 02</span>
     </div>
   );
 }

@@ -67,9 +67,9 @@ export function ProjectArchive({ locale, projects }: { locale: Locale; projects:
   return (
     <section ref={sectionRef} className="projects" aria-labelledby="projects-title">
       <header className="projects__header">
-        <p className="section-kicker">{locale === 'pt' ? 'TRABALHOS SELECIONADOS' : 'SELECTED WORK'}</p>
-        <h2 id="projects-title">{locale === 'pt' ? 'Coisas que já ganharam forma.' : 'Things that have taken shape.'}</h2>
-        <p>{locale === 'pt' ? 'Do canal que alcançou milhões ao sistema que organiza uma aula — cada projeto pede uma linguagem.' : 'From a channel reaching millions to a system organizing one class — every project asks for its own language.'}</p>
+        <p className="section-kicker">{locale === 'pt' ? 'O QUE JÁ SAIU DA CABEÇA' : 'THINGS THAT MADE IT OUT OF MY HEAD'}</p>
+        <h2 id="projects-title">{locale === 'pt' ? 'Sério, estranho, útil ou só divertido.' : 'Serious, strange, useful or simply fun.'}</h2>
+        <p>{locale === 'pt' ? 'Aqui cabem o canal que alcançou milhões, um jogo cheio de piadas internas, sistemas para estudar e lembranças que eu quis guardar.' : 'There is room here for a channel that reached millions, a game full of inside jokes, systems for studying and memories I wanted to keep.'}</p>
       </header>
 
       <div className="projects__featured">

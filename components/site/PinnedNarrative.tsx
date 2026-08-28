@@ -61,8 +61,8 @@ export function PinnedNarrative({ locale, steps }: { locale: Locale; steps: Stor
     <section ref={sectionRef} className="story" aria-labelledby="story-title">
       <div className="story__rail">
         <div className="story__heading">
-          <p className="section-kicker">{locale === 'pt' ? 'DO IMPULSO À ENTREGA' : 'FROM IMPULSE TO DELIVERY'}</p>
-          <h2 id="story-title">{locale === 'pt' ? 'Uma criação, cinco camadas.' : 'One creation, five layers.'}</h2>
+          <p className="section-kicker">{locale === 'pt' ? 'NÃO É UM PROCESSO' : 'THIS IS NOT A PROCESS'}</p>
+          <h2 id="story-title">{locale === 'pt' ? 'Cinco motivos para fazer uma coisa.' : 'Five reasons to make a thing.'}</h2>
         </div>
         {steps.map((step, index) => (
           <article key={step.id} className={`story-step ${active === index ? 'is-active' : ''}`} data-step={index}>
@@ -99,9 +99,9 @@ export function PinnedNarrative({ locale, steps }: { locale: Locale; steps: Stor
           <div className="stack-core"><span>{current.stat}</span></div>
         </div>
         <div className="story__visual-meta">
-          <span>GK / PROCESS</span>
+          <span>{locale === 'pt' ? 'GK / MOTIVOS' : 'GK / REASONS'}</span>
           <strong>{current.index} — {current.title[locale].toUpperCase()}</strong>
-          <span>STATE {String(active + 1).padStart(2, '0')} / {String(steps.length).padStart(2, '0')}</span>
+          <span>{locale === 'pt' ? 'PULSO' : 'IMPULSE'} {String(active + 1).padStart(2, '0')} / {String(steps.length).padStart(2, '0')}</span>
         </div>
       </div>
     </section>
