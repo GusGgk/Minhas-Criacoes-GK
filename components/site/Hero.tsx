@@ -1,7 +1,13 @@
-import { PrismCanvas } from '@/components/motion/PrismCanvas';
+import { LifeTimeline } from '@/components/motion/LifeTimeline';
 import type { Locale, SiteContent } from '@/lib/content/types';
 
-export function Hero({ locale, onToggleLocale, content }: { locale: Locale; onToggleLocale: () => void; content: SiteContent }) {
+export function Hero({ locale, onToggleLocale, theme, onToggleTheme, content }: {
+  locale: Locale;
+  onToggleLocale: () => void;
+  theme: 'dark' | 'light';
+  onToggleTheme: () => void;
+  content: SiteContent;
+}) {
   const hero = content.hero;
 
   return (
@@ -10,9 +16,9 @@ export function Hero({ locale, onToggleLocale, content }: { locale: Locale; onTo
         <a className="brand" href="#top" aria-label="Minhas Criações GK — início">
           <span className="brand__mark"><b>G</b><i>K</i></span>
           <span className="brand__name">{locale === 'pt' ? 'MINHAS CRIAÇÕES' : 'MY CREATIONS'}</span>
-        </a>
+        </a> 
         <div className="topbar__meta" aria-hidden="true">
-          <span>SÃO PAULO · BR</span>
+          <span>CURITIBA · BR</span>
           <span className="status-dot" />
           <span>{locale === 'pt' ? 'SEMPRE FAZENDO ALGO' : 'ALWAYS MAKING SOMETHING'}</span>
         </div>
@@ -26,6 +32,18 @@ export function Hero({ locale, onToggleLocale, content }: { locale: Locale; onTo
             <span className={locale === 'pt' ? 'is-active' : ''}>PT</span>
             <span>/</span>
             <span className={locale === 'en' ? 'is-active' : ''}>EN</span>
+          </button>
+          <button
+            type="button"
+            className="theme-toggle"
+            onClick={onToggleTheme}
+            aria-pressed={theme === 'light'}
+            aria-label={locale === 'pt'
+              ? (theme === 'dark' ? 'Mudar para o tema claro' : 'Mudar para o tema escuro')
+              : (theme === 'dark' ? 'Switch to the light theme' : 'Switch to the dark theme')}
+          >
+            <i aria-hidden="true" />
+            <span>{locale === 'pt' ? (theme === 'dark' ? 'CLARO' : 'ESCURO') : (theme === 'dark' ? 'LIGHT' : 'DARK')}</span>
           </button>
           <a className="menu-link" href="#capitulos">{locale === 'pt' ? 'VER AS CRIAÇÕES' : 'SEE THE WORK'} <span>↘</span></a>
         </div>
@@ -41,20 +59,12 @@ export function Hero({ locale, onToggleLocale, content }: { locale: Locale; onTo
               <span>{locale === 'pt' ? 'COMEÇAR A VER' : 'START LOOKING'}</span>
               <i aria-hidden="true">↘</i>
             </a>
-            <span className="hero__hint">{locale === 'pt' ? 'Mova o cursor' : 'Move your cursor'}</span>
+            <span className="hero__hint">{locale === 'pt' ? 'Percorra a linha' : 'Follow the line'}</span>
           </div>
         </div>
 
         <div className="hero__visual">
-          <PrismCanvas locale={locale} />
-        </div>
-
-        <div className="hero__index" aria-label={locale === 'pt' ? 'As sete frentes' : 'The seven fronts'}>
-          {content.chapters.map((chapter) => (
-            <a key={chapter.id} href={`#${chapter.anchor}`}>
-              {chapter.index} — {chapter.nav[locale].toUpperCase()}
-            </a>
-          ))}
+          <LifeTimeline locale={locale} />
         </div>
       </section>
 

@@ -1,6 +1,12 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
+/**
+ * Runs before the first paint so the chosen theme is already on <html> and the
+ * page never flashes the wrong ground. Kept inline and tiny on purpose.
+ */
+const applyTheme = `(function(){try{var t=localStorage.getItem('gk-theme');if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.dataset.theme=t}catch(e){}})()`;
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://criacoes.gusgk.com.br'),
   title: 'Minhas Criações GK — Gustavo Giacoia Kumagai',
@@ -34,7 +40,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#080908',
+  themeColor: [
+    { media: '(prefers-color-scheme: dark)', color: '#080908' },
+    { media: '(prefers-color-scheme: light)', color: '#f4f1ea' },
+  ],
   colorScheme: 'dark light',
   width: 'device-width',
   initialScale: 1,
@@ -43,6 +52,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
+      <head><script dangerouslySetInnerHTML={{ __html: applyTheme }} /></head>
       <body>{children}</body>
     </html>
   );
