@@ -608,7 +608,9 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
   transform: translate(-50%, -50%) translateZ(110px);
   transition: color .5s ease, border-color .5s ease, box-shadow .5s ease;
 }
-.stack-core span { font: 650 19px var(--mono); letter-spacing: -.06em; }
+/* the word is content, so it can be one short token or two ('DE NOVO'):
+   centre it and let it break rather than spill out of the circle. */
+.stack-core span { max-width: 100%; padding-inline: 7px; font: 650 19px/1.06 var(--mono); letter-spacing: -.06em; text-align: center; text-wrap: balance; }
 .story__visual-meta { position: absolute; inset: auto 38px 31px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; color: var(--text-faint); font: 500 8px var(--mono); letter-spacing: .12em; }
 .story__visual-meta strong { color: var(--fg); font-size: 9px; font-weight: 600; }
 .story__visual-meta span:last-child { text-align: right; }
@@ -1452,6 +1454,7 @@ a.chapter-entry:hover .chapter-entry__arrow { transform: translate(4px, -4px); }
   .story__visual-meta span:last-child { display: none; }
   .stack-object { width: min(74%, 330px); }
   .stack-core { width: 78px; }
+  .stack-core span { font-size: 15px; padding-inline: 5px; }
   .story__heading { min-height: 54vh; padding-block: 85px 55px; }
   .story__heading h2 { font-size: 58px; }
   .story-step { grid-template-columns: 44px 1fr; min-height: 58vh; gap: 8px; }

@@ -96,7 +96,7 @@ export function PinnedNarrative({ locale, steps }: { locale: Locale; steps: Stor
               </div>
             );
           })}
-          <div className="stack-core"><span>{current.stat}</span></div>
+          <div className="stack-core"><span>{current.stat[locale]}</span></div>
         </div>
         <div className="story__visual-meta">
           <span>{locale === 'pt' ? 'GK / MOTIVOS' : 'GK / REASONS'}</span>

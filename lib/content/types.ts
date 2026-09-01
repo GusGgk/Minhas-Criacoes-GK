@@ -17,7 +17,7 @@ export type StoryStep = {
   title: LocalizedText;
   eyebrow: LocalizedText;
   body: LocalizedText;
-  stat: string;
+  stat: LocalizedText;
   accent: string;
 };
 
