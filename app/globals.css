@@ -21,6 +21,20 @@
   font-weight: 400 800;
 }
 
+/* Registered so the cross-fade on <body> actually lands. An unregistered
+   custom property behind a transitioned property keeps resolving to the old
+   value, which left the light theme painting dark on light. */
+@property --surface-0 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #080908;
+}
+@property --fg {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #f2eee7;
+}
+
 :root {
   color-scheme: dark;
 
@@ -234,11 +248,11 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 
 .hero {
   position: relative;
-  min-height: 100svh;
+  min-height: min(72svh, 660px);
   display: grid;
   grid-template-columns: minmax(0, 0.95fr) minmax(420px, 1.05fr);
   align-items: center;
-  padding: 126px clamp(22px, 4vw, 68px) 78px;
+  padding: 108px clamp(22px, 4vw, 68px) 44px;
   isolation: isolate;
 }
 .hero::before {
@@ -693,13 +707,13 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .footer__top a:hover, .footer__bottom a:hover { color: var(--fg); }
 .footer__cta {
   position: relative;
-  min-height: 58vh;
+  min-height: clamp(150px, 22vh, 230px);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 40px;
   border-bottom: 1px solid var(--card-border);
-  font: 650 clamp(51px, 9.25vw, 156px)/.82 var(--display);
+  font: 650 clamp(38px, 5.4vw, 76px)/.9 var(--display);
   letter-spacing: -.085em;
   text-transform: uppercase;
 }
@@ -1355,6 +1369,365 @@ a.chapter-entry:hover .chapter-entry__arrow { transform: translate(4px, -4px); }
 }
 .projects__empty p { margin: 0; color: var(--text-faint); font: 500 10px var(--mono); letter-spacing: .12em; text-transform: uppercase; }
 
+/* ============================================================
+   The cabin: a wall of shelves, and one creation soloed on it.
+   Every colour comes from a token so both themes follow along;
+   --tone is the shelf colour, --tone-ink its text-safe version.
+   ============================================================ */
+
+.wall {
+  --shelf-gap: clamp(26px, 3.4vw, 46px);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--shelf-gap) clamp(30px, 4vw, 64px);
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: clamp(10px, 2vw, 26px) clamp(22px, 5vw, 68px) clamp(70px, 9vw, 120px);
+}
+
+.shelf {
+  --tone-ink: color-mix(in srgb, var(--tone) var(--accent-mix), var(--accent-mix-base));
+  min-width: 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.shelf__name {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 0 4px;
+  font: 600 clamp(15px, 1.15vw, 17px)/1.3 var(--body);
+  letter-spacing: -0.005em;
+  color: var(--fg);
+}
+.shelf__name i {
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: var(--tone);
+  transform: translateY(-1px);
+}
+.shelf__name b {
+  margin-left: auto;
+  color: var(--text-ghost);
+  font-weight: 400;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.shelf__items { margin: 0; padding: 0; list-style: none; }
+
+.shelf__items button {
+  display: block;
+  width: 100%;
+  padding: 11px 0 12px;
+  border: 0;
+  border-bottom: 1px solid var(--line-soft);
+  background: none;
+  color: inherit;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.shelf__items li:last-child button { border-bottom: 0; }
+
+.shelf__item-name {
+  display: block;
+  font: 600 clamp(19px, 1.7vw, 25px)/1.15 var(--display);
+  letter-spacing: -0.03em;
+  color: var(--fg);
+  transition: color 0.2s ease, transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.shelf__item-line {
+  display: block;
+  margin-top: 3px;
+  max-width: 42ch;
+  color: var(--text-faint);
+  font-size: 13.5px;
+  line-height: 1.45;
+  transition: color 0.2s ease;
+}
+
+.shelf__items button:hover .shelf__item-name,
+.shelf__items button:focus-visible .shelf__item-name {
+  color: var(--tone-ink);
+  transform: translateX(5px);
+}
+.shelf__items button:hover .shelf__item-line,
+.shelf__items button:focus-visible .shelf__item-line { color: var(--text-soft); }
+.shelf__items button:focus-visible { outline: 2px solid var(--tone-ink); outline-offset: 3px; border-radius: 3px; }
+
+.shelf--bare { opacity: 0.62; }
+.shelf__bare {
+  margin: 11px 0 0;
+  max-width: 34ch;
+  color: var(--text-ghost);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+/* ---------- one creation, alone ---------- */
+
+.solo {
+  /* The block system (galleries, palettes, documents) reads these; defining
+     them here is what lets the same CSS serve a soloed creation. */
+  --c-bg: var(--surface-0);
+  --c-fg: var(--fg);
+  --c-soft: var(--text-soft);
+  --c-line: var(--card-border);
+  --c-panel: var(--card-bg);
+  --c-frame: var(--frame);
+  --chapter-accent: var(--tone);
+  --tone-ink: color-mix(in srgb, var(--tone) var(--accent-mix), var(--accent-mix-base));
+
+  position: relative;
+  min-height: 100svh;
+  padding: clamp(22px, 4vw, 54px) clamp(22px, 5vw, 68px) clamp(70px, 9vw, 120px);
+  background: var(--surface-0);
+  isolation: isolate;
+}
+
+/* The room taking the creation's colour. */
+.solo__wash {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: -1;
+  height: min(78svh, 760px);
+  pointer-events: none;
+  background:
+    radial-gradient(120% 78% at 12% 0%, color-mix(in srgb, var(--tone) 20%, transparent), transparent 62%),
+    linear-gradient(to bottom, color-mix(in srgb, var(--tone) 7%, transparent), transparent 78%);
+}
+
+.solo__inner { max-width: 1180px; margin: 0 auto; }
+
+.solo__head { max-width: 30ch; }
+
+.solo__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: clamp(30px, 5vw, 58px);
+  padding: 8px 15px 8px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: none;
+  color: var(--text-soft);
+  font: 500 13px var(--body);
+  cursor: pointer;
+  transition: border-color 0.22s ease, color 0.22s ease;
+}
+.solo__back i {
+  width: 13px;
+  height: 9px;
+  background: currentColor;
+  clip-path: polygon(0 50%, 42% 0, 42% 34%, 100% 34%, 100% 66%, 42% 66%, 42% 100%);
+}
+.solo__back:hover { border-color: var(--tone-ink); color: var(--fg); }
+.solo__back:focus-visible { outline: 2px solid var(--tone-ink); outline-offset: 3px; }
+
+.solo__shelf {
+  margin: 0 0 12px;
+  color: var(--tone-ink);
+  font: 600 14px var(--body);
+  letter-spacing: -0.005em;
+}
+.solo__head h1 {
+  margin: 0;
+  font: 600 clamp(38px, 6.4vw, 82px)/0.96 var(--display);
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+.solo__tagline {
+  max-width: 32ch;
+  margin: 18px 0 0;
+  color: var(--text-soft);
+  font-size: clamp(16px, 1.4vw, 20px);
+  line-height: 1.5;
+}
+
+.solo__stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+  gap: clamp(26px, 4vw, 60px);
+  align-items: end;
+  margin-top: clamp(38px, 5.5vw, 76px);
+}
+.solo__stage:has(> .solo__prose:only-child) { grid-template-columns: minmax(0, 62ch); }
+
+.solo__cover { margin: 0; }
+.solo__cover button {
+  display: block;
+  width: 100%;
+  aspect-ratio: var(--ratio-wide);
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid var(--c-line);
+  border-radius: var(--card-radius);
+  background: var(--frame);
+  cursor: zoom-in;
+}
+.solo__cover img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.solo__cover button:hover img { transform: scale(1.03); }
+.solo__cover button:focus-visible { outline: 2px solid var(--tone-ink); outline-offset: 3px; }
+.solo__cover figcaption {
+  margin-top: 10px;
+  color: var(--text-faint);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.solo__prose p { margin: 0 0 14px; color: var(--text-soft); font-size: 16px; line-height: 1.62; }
+.solo__prose p:last-of-type { margin-bottom: 0; }
+.solo__year {
+  color: var(--text-ghost);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.solo__link {
+  display: inline-block;
+  margin-top: 22px;
+  padding: 11px 20px;
+  border-radius: 999px;
+  background: var(--tone);
+  color: var(--on-accent);
+  font: 600 14px var(--body);
+  text-decoration: none;
+  transition: transform 0.24s ease, filter 0.24s ease;
+}
+.solo__link:hover { transform: translateY(-2px); filter: brightness(1.06); }
+.solo__link:focus-visible { outline: 2px solid var(--tone-ink); outline-offset: 3px; }
+
+.solo__footnote {
+  max-width: 60ch;
+  margin: clamp(40px, 5vw, 70px) 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--line-soft);
+  color: var(--text-ghost);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+/* The cabin is meant to fit; the hero gives the wall room to show. */
+.is-solo .topbar { display: none; }
+
+@media (max-width: 720px) {
+  .wall { grid-template-columns: 1fr; }
+  .solo__stage,
+  .solo__stage:has(> .solo__prose:only-child) { grid-template-columns: 1fr; align-items: start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shelf__items button:hover .shelf__item-name { transform: none; }
+  .solo__cover button:hover img { transform: none; }
+}
+
+/* ------------------------------------------------------------
+   What each creation emphasises. The card system is untouched;
+   only the weight of one element shifts, so the family holds.
+   ------------------------------------------------------------ */
+
+/* Reach is the story, so the numbers get the room and the colour. */
+.solo--broadcast .chapter-stats {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+.solo--broadcast .chapter-stats div {
+  padding: 20px clamp(12px, 2vw, 26px) 4px;
+  border-top: 1px solid color-mix(in srgb, var(--tone) 45%, transparent);
+}
+.solo--broadcast .chapter-stats div + div { border-left: 1px solid var(--c-line); }
+.solo--broadcast .chapter-stats div:first-child { padding-left: 0; }
+.solo--broadcast .chapter-stats dt {
+  font-size: clamp(28px, 4.2vw, 68px);
+  color: var(--tone-ink);
+}
+.solo--broadcast .chapter-block--gallery .chapter-gallery {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  scroll-snap-type: x mandatory;
+}
+.solo--broadcast .chapter-block--gallery .chapter-shot {
+  flex: 0 0 clamp(170px, 20vw, 250px);
+  scroll-snap-align: start;
+}
+
+/* Colour is the story: eight swatches read as one continuous band. */
+.solo--palette .chapter-swatches {
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0;
+}
+.solo--palette .chapter-swatch span {
+  height: clamp(76px, 8.4vw, 118px);
+  border: 0;
+  border-radius: 0;
+  font-size: 0;
+}
+.solo--palette .chapter-swatch i {
+  margin-top: 10px;
+  opacity: 0;
+  transition: opacity 0.26s ease;
+}
+.solo--palette .chapter-swatch:hover i,
+.solo--palette .chapter-swatch:focus-within i { opacity: 1; }
+.solo--palette .chapter-swatch:first-child span { border-radius: var(--card-radius) 0 0 var(--card-radius); }
+.solo--palette .chapter-swatch:last-child span { border-radius: 0 var(--card-radius) var(--card-radius) 0; }
+.solo--palette .chapter-entries { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.solo--palette .chapter-entry { border-top: 2px solid var(--tone); }
+
+/* Seven screens of a planner, laid out in a tight three-up. */
+.solo--deal .chapter-gallery { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+
+/* The graph is the point, so it gets a square of its own. */
+.solo--graph .chapter__blocks { grid-template-columns: minmax(0, 1fr) minmax(0, 320px); align-items: start; }
+.solo--graph .constellation { max-height: 340px; }
+
+/* Match photos sit four across, like a strip of prints. */
+.solo--reel .chapter-gallery { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+/* A photo essay gives the cover the full width before the mosaic. */
+.solo--essay .solo__stage { grid-template-columns: minmax(0, 1fr); }
+.solo--essay .solo__cover button { aspect-ratio: 21 / 9; }
+.solo--essay .solo__prose { max-width: 62ch; }
+.solo--essay .chapter-gallery { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+
+/* Documents are portrait, and they read better standing next to the text. */
+.solo--dossier .solo__stage { grid-template-columns: minmax(0, 0.42fr) minmax(0, 0.58fr); align-items: start; }
+.solo--dossier .solo__cover button { aspect-ratio: var(--ratio-doc); }
+.solo--dossier .solo__cover img { object-fit: contain; background: var(--frame); }
+.solo--dossier .chapter-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 720px; }
+.solo--dossier .chapter-gallery .chapter-shot__frame { aspect-ratio: var(--ratio-wide); }
+
+/* Two that are just nice to have around. */
+.solo--gift .solo__cover button,
+.solo--arcade .solo__cover button { aspect-ratio: var(--ratio-wide); }
+
+@media (max-width: 860px) {
+  .solo--broadcast .chapter-stats { grid-template-columns: repeat(2, 1fr); }
+  .solo--broadcast .chapter-stats div:nth-child(odd) { padding-left: 0; }
+  .solo--palette .chapter-swatches { grid-template-columns: repeat(4, 1fr); }
+  .solo--palette .chapter-swatch i { opacity: 1; }
+  .solo--palette .chapter-swatch:nth-child(4) span { border-radius: 0 var(--card-radius) var(--card-radius) 0; }
+  .solo--palette .chapter-swatch:nth-child(5) span { border-radius: var(--card-radius) 0 0 var(--card-radius); }
+  .solo--palette .chapter-entries { grid-template-columns: 1fr; }
+  .solo--graph .chapter__blocks { grid-template-columns: 1fr; }
+  .solo--reel .chapter-gallery,
+  .solo--essay .chapter-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .solo--dossier .solo__stage { grid-template-columns: 1fr; }
+  .solo--essay .solo__cover button { aspect-ratio: var(--ratio-wide); }
+}
+
 @media (max-width: 980px) {
   .chapter__blocks--panelled { grid-template-columns: 1fr; }
   .chapter__panel + .chapter__panel { padding-left: 0; border-left: 0; padding-top: clamp(28px, 5vw, 48px); border-top: 1px solid var(--c-line); }
@@ -1471,7 +1844,7 @@ a.chapter-entry:hover .chapter-entry__arrow { transform: translate(4px, -4px); }
   .project-card__metrics strong { font-size: 16px; }
   .footer { padding: 30px 18px 24px; }
   .footer__top { align-items: flex-start; flex-direction: column; gap: 14px; padding-bottom: 26px; }
-  .footer__cta { min-height: 52vh; align-items: flex-start; flex-direction: column; justify-content: center; gap: 36px; padding-block: 50px; font-size: clamp(52px, 17vw, 78px); }
+  .footer__cta { min-height: clamp(140px, 26vh, 210px); align-items: flex-start; flex-direction: column; justify-content: center; gap: 36px; padding-block: 50px; font-size: clamp(52px, 17vw, 78px); }
   .footer__cta i { width: 82px; }
   .footer__bottom { align-items: flex-start; flex-direction: column; gap: 12px; }
 }
