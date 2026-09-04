@@ -119,6 +119,43 @@ export type Chapter = {
   coveredSlugs: string[];
 };
 
+/** A shelf in the cabin. Categories carry the colour; creations inherit it. */
+export type Category = {
+  id: string;
+  name: LocalizedText;
+  accent: string;
+  /** stands in for the list while the shelf is still empty */
+  empty?: LocalizedText;
+};
+
+/** One thing he made. Opening it takes over the whole page. */
+export type Creation = {
+  id: string;
+  slug: string;
+  categoryId: string;
+  name: LocalizedText;
+  tagline: LocalizedText;
+  year: LocalizedText;
+  cover?: GalleryImage;
+  body: LocalizedText[];
+  blocks: ChapterBlock[];
+  link?: { href: string; label: LocalizedText };
+  footnote?: LocalizedText;
+  /** decorative canvas rendered alongside the blocks */
+  visual?: 'constellation';
+  /** how this one announces itself when it takes the room */
+  signature?:
+    | 'broadcast'
+    | 'palette'
+    | 'deal'
+    | 'graph'
+    | 'reel'
+    | 'essay'
+    | 'dossier'
+    | 'gift'
+    | 'arcade';
+};
+
 export type SiteContent = {
   hero: {
     eyebrow: LocalizedText;
@@ -128,5 +165,7 @@ export type SiteContent = {
   metrics: Metric[];
   story: StoryStep[];
   chapters: Chapter[];
+  categories: Category[];
+  creations: Creation[];
   projects: Project[];
 };

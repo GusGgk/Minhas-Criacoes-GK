@@ -45,7 +45,7 @@ export function Hero({ locale, onToggleLocale, theme, onToggleTheme, content }: 
             <i aria-hidden="true" />
             <span>{locale === 'pt' ? (theme === 'dark' ? 'CLARO' : 'ESCURO') : (theme === 'dark' ? 'LIGHT' : 'DARK')}</span>
           </button>
-          <a className="menu-link" href="#capitulos">{locale === 'pt' ? 'VER AS CRIAÇÕES' : 'SEE THE WORK'} <span>↘</span></a>
+          <a className="menu-link" href="#parede">{locale === 'pt' ? 'Ver a parede' : 'See the wall'} <span>↘</span></a>
         </div>
       </header>
 
@@ -55,8 +55,8 @@ export function Hero({ locale, onToggleLocale, theme, onToggleTheme, content }: 
           <h1>{hero.title[locale]}</h1>
           <p className="hero__lead">{hero.lead[locale]}</p>
           <div className="hero__cta-row">
-            <a className="primary-cta" href="#capitulos">
-              <span>{locale === 'pt' ? 'COMEÇAR A VER' : 'START LOOKING'}</span>
+            <a className="primary-cta" href="#parede">
+              <span>{locale === 'pt' ? 'Descer pra parede' : 'Down to the wall'}</span>
               <i aria-hidden="true">↘</i>
             </a>
             <span className="hero__hint">{locale === 'pt' ? 'Percorra a linha' : 'Follow the line'}</span>

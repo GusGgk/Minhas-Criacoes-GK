@@ -1,4 +1,5 @@
 import { chapters } from './chapters';
+import { categories, creations } from './creations';
 import type { SiteContent } from './types';
 
 export const defaultContent: SiteContent = {
@@ -14,6 +15,8 @@ export const defaultContent: SiteContent = {
     },
   },
   chapters,
+  categories,
+  creations,
   metrics: [
     { id: 'fronts', value: '07', label: { pt: 'frentes que eu toco ao mesmo tempo', en: 'fronts I keep going at once' } },
     { id: 'views', value: '26,6 mi', label: { pt: 'meu sonho de ser youtuber, em visualizações', en: 'my dream of being a youtuber, in views' } },
