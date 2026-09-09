@@ -135,6 +135,23 @@ function Block({ block, locale, onOpen }: { block: ChapterBlock; locale: Locale;
         </section>
       );
 
+    case 'video':
+      return (
+        <section className="chapter-block chapter-block--video">
+          <BlockLabel text={block.label?.[locale]} note={block.note?.[locale]} />
+          <figure className="chapter-video">
+            <video
+              src={block.clip.src}
+              poster={block.clip.poster}
+              controls
+              playsInline
+              preload="metadata"
+            />
+            {block.clip.caption[locale] && <figcaption>{block.clip.caption[locale]}</figcaption>}
+          </figure>
+        </section>
+      );
+
     case 'chips':
       return (
         <section className="chapter-block chapter-block--chips">

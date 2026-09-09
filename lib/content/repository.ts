@@ -1,121 +1,213 @@
-import { asc, eq, max } from 'drizzle-orm';
+import { asc, count, eq, max } from 'drizzle-orm';
 import { ensureDatabase } from '@/db/bootstrap';
 import { getDb } from '@/db/index';
-import { contentItems } from '@/db/schema';
+import { categories as categoriesTable, creations as creationsTable } from '@/db/schema';
 import { defaultContent } from './default-content';
-import type { Project, SiteContent } from './types';
-import type { EditableProject } from './validation';
+import type { Category, Creation, SiteContent } from './types';
+import type { EditableCategory, EditableCreation } from './creation-validation';
 
-type ContentRow = typeof contentItems.$inferSelect;
+type CategoryRow = typeof categoriesTable.$inferSelect;
+type CreationRow = typeof creationsTable.$inferSelect;
 
-function parseJson<T>(value: string | null, fallback: T): T {
-  if (!value) return fallback;
-  try { return JSON.parse(value) as T; } catch { return fallback; }
+/** A locale pair falls back to Portuguese whenever English was left blank. */
+function pair(pt: string, en: string) {
+  return { pt, en: en || pt };
 }
 
-function rowToProject(row: ContentRow): Project {
+function rowToCategory(row: CategoryRow): Category {
   return {
     id: row.id,
-    slug: row.slug,
-    kind: row.kind,
-    position: row.position,
-    visible: row.visible,
-    featured: row.featured,
     accent: row.accent,
-    year: row.year,
-    tags: parseJson(row.tagsJson, [] as string[]),
-    metrics: parseJson(row.metricsJson, undefined as Project['metrics']),
-    href: row.href ?? undefined,
-    title: { pt: row.titlePt, en: row.titleEn || row.titlePt },
-    category: { pt: row.categoryPt, en: row.categoryEn || row.categoryPt },
-    summary: { pt: row.summaryPt, en: row.summaryEn || row.summaryPt },
-    image: row.imageUrl,
-    alt: { pt: row.altPt, en: row.altEn || row.altPt },
+    name: pair(row.namePt, row.nameEn),
+    empty: row.emptyPt ? pair(row.emptyPt, row.emptyEn ?? '') : undefined,
   };
 }
 
-function toRow(input: EditableProject, updatedAt: number) {
+function rowToCreation(row: CreationRow): Creation {
   return {
-    slug: input.slug,
-    kind: input.kind,
-    visible: input.visible,
-    featured: input.featured,
-    accent: input.accent,
-    year: input.year,
-    tagsJson: JSON.stringify(input.tags),
-    metricsJson: input.metrics ? JSON.stringify(input.metrics) : null,
-    href: input.href ?? null,
-    titlePt: input.title.pt,
-    titleEn: input.title.en,
-    categoryPt: input.category.pt,
-    categoryEn: input.category.en,
-    summaryPt: input.summary.pt,
-    summaryEn: input.summary.en,
-    imageUrl: input.image,
-    altPt: input.alt.pt,
-    altEn: input.alt.en,
-    updatedAt,
+    id: row.id,
+    slug: row.slug,
+    categoryId: row.categoryId,
+    name: pair(row.namePt, row.nameEn),
+    tagline: pair(row.taglinePt, row.taglineEn),
+    year: pair(row.yearPt, row.yearEn),
+    cover: row.cover ?? undefined,
+    body: row.body ?? [],
+    blocks: row.blocks ?? [],
+    link: row.link ?? undefined,
+    footnote: row.footnote ?? undefined,
+    signature: (row.signature as Creation['signature']) ?? undefined,
+    visual: (row.visual as Creation['visual']) ?? undefined,
+  };
+}
+
+/** Shelves and what sits on them, in the order the panel put them. */
+async function readCabin() {
+  const db = getDb();
+  const [shelfRows, madeRows] = await Promise.all([
+    db.select().from(categoriesTable)
+      .where(eq(categoriesTable.visible, true))
+      .orderBy(asc(categoriesTable.position)),
+    db.select().from(creationsTable)
+      .where(eq(creationsTable.visible, true))
+      .orderBy(asc(creationsTable.position)),
+  ]);
+  return {
+    categories: shelfRows.map(rowToCategory),
+    creations: madeRows.map(rowToCreation),
   };
 }
 
 export async function getPublishedContent(): Promise<SiteContent> {
   try {
     await ensureDatabase();
-    const rows = await getDb().select().from(contentItems)
-      .where(eq(contentItems.visible, true))
-      .orderBy(asc(contentItems.position));
-    return { ...defaultContent, projects: rows.map(rowToProject) };
+    const cabin = await readCabin();
+    return {
+      ...defaultContent,
+      // An empty cabin means the seed has not run yet, so keep the bundled one
+      // rather than rendering a site with no shelves at all.
+      categories: cabin.categories.length ? cabin.categories : defaultContent.categories,
+      creations: cabin.creations.length ? cabin.creations : defaultContent.creations,
+    };
   } catch (error) {
     console.warn('Using bundled content fallback:', error);
     return defaultContent;
   }
 }
 
-export async function listAllProjects(): Promise<Project[]> {
-  await ensureDatabase();
-  const rows = await getDb().select().from(contentItems).orderBy(asc(contentItems.position));
-  return rows.map(rowToProject);
+/* ---------------------------------------------------------------
+   Write side of the cabin. Everything the panel does lands here.
+   --------------------------------------------------------------- */
+
+/** Columns shared by insert and update, so the two never drift apart. */
+function creationToRow(input: EditableCreation, updatedAt: number) {
+  return {
+    slug: input.slug,
+    categoryId: input.categoryId,
+    visible: input.visible !== false,
+    signature: input.signature ?? null,
+    visual: input.visual ?? null,
+    namePt: input.name.pt,
+    nameEn: input.name.en,
+    taglinePt: input.tagline.pt,
+    taglineEn: input.tagline.en,
+    yearPt: input.year.pt,
+    yearEn: input.year.en,
+    cover: input.cover ?? null,
+    body: input.body,
+    blocks: input.blocks,
+    link: input.link ?? null,
+    footnote: input.footnote ?? null,
+    updatedAt,
+  };
 }
 
-export async function createProject(input: EditableProject): Promise<Project> {
+export async function listAllCreations(): Promise<(Creation & { visible: boolean; position: number })[]> {
+  await ensureDatabase();
+  const rows = await getDb().select().from(creationsTable).orderBy(asc(creationsTable.position));
+  return rows.map((row) => ({ ...rowToCreation(row), visible: row.visible, position: row.position }));
+}
+
+export async function listAllCategories(): Promise<(Category & { visible: boolean; position: number })[]> {
+  await ensureDatabase();
+  const rows = await getDb().select().from(categoriesTable).orderBy(asc(categoriesTable.position));
+  return rows.map((row) => ({ ...rowToCategory(row), visible: row.visible, position: row.position }));
+}
+
+export async function createCreation(input: EditableCreation): Promise<Creation> {
   await ensureDatabase();
   const db = getDb();
-  const [{ value: maxPosition }] = await db.select({ value: max(contentItems.position) }).from(contentItems);
-  const position = (maxPosition ?? -1) + 1;
-  const id = crypto.randomUUID();
+  const [last] = await db.select({ value: max(creationsTable.position) }).from(creationsTable);
   const now = Date.now();
-  const [row] = await db.insert(contentItems)
-    .values({ id, position, createdAt: now, ...toRow(input, now) })
-    .returning();
-  return rowToProject(row);
+  const [row] = await db.insert(creationsTable).values({
+    id: crypto.randomUUID(),
+    position: Number(last?.value ?? -1) + 1,
+    createdAt: now,
+    ...creationToRow(input, now),
+  }).returning();
+  return rowToCreation(row);
 }
 
-export async function updateProject(id: string, input: EditableProject): Promise<Project> {
+export async function updateCreation(id: string, input: EditableCreation): Promise<Creation> {
   await ensureDatabase();
-  const db = getDb();
-  const [existing] = await db.select({ position: contentItems.position })
-    .from(contentItems).where(eq(contentItems.id, id));
-  if (!existing) throw new Error('NOT_FOUND');
-  const [row] = await db.update(contentItems)
-    .set(toRow(input, Date.now()))
-    .where(eq(contentItems.id, id))
+  const [row] = await getDb().update(creationsTable)
+    .set(creationToRow(input, Date.now()))
+    .where(eq(creationsTable.id, id))
     .returning();
-  return rowToProject(row);
+  if (!row) throw new Error('NOT_FOUND');
+  return rowToCreation(row);
 }
 
-export async function deleteProject(id: string): Promise<void> {
+export async function deleteCreation(id: string): Promise<void> {
   await ensureDatabase();
-  const deleted = await getDb().delete(contentItems)
-    .where(eq(contentItems.id, id))
-    .returning({ id: contentItems.id });
-  if (deleted.length === 0) throw new Error('NOT_FOUND');
+  const rows = await getDb().delete(creationsTable).where(eq(creationsTable.id, id)).returning({ id: creationsTable.id });
+  if (rows.length === 0) throw new Error('NOT_FOUND');
 }
 
-export async function reorderProjects(ids: string[]): Promise<void> {
+export async function reorderCreations(ids: string[]): Promise<void> {
   await ensureDatabase();
   const db = getDb();
   const now = Date.now();
-  await Promise.all(ids.map((id, position) => db.update(contentItems)
-    .set({ position, updatedAt: now })
-    .where(eq(contentItems.id, id))));
+  // Small lists, and a transaction keeps the wall from showing a half-applied order.
+  await db.transaction(async (tx) => {
+    for (const [position, id] of ids.entries()) {
+      await tx.update(creationsTable).set({ position, updatedAt: now }).where(eq(creationsTable.id, id));
+    }
+  });
+}
+
+export async function createCategory(input: EditableCategory): Promise<Category> {
+  await ensureDatabase();
+  const db = getDb();
+  const [last] = await db.select({ value: max(categoriesTable.position) }).from(categoriesTable);
+  const now = Date.now();
+  const [row] = await db.insert(categoriesTable).values({
+    id: input.id ?? crypto.randomUUID(),
+    position: Number(last?.value ?? -1) + 1,
+    visible: input.visible !== false,
+    accent: input.accent,
+    namePt: input.name.pt,
+    nameEn: input.name.en,
+    emptyPt: input.empty?.pt ?? null,
+    emptyEn: input.empty?.en ?? null,
+    createdAt: now,
+    updatedAt: now,
+  }).returning();
+  return rowToCategory(row);
+}
+
+export async function updateCategory(id: string, input: EditableCategory): Promise<Category> {
+  await ensureDatabase();
+  const [row] = await getDb().update(categoriesTable).set({
+    visible: input.visible !== false,
+    accent: input.accent,
+    namePt: input.name.pt,
+    nameEn: input.name.en,
+    emptyPt: input.empty?.pt ?? null,
+    emptyEn: input.empty?.en ?? null,
+    updatedAt: Date.now(),
+  }).where(eq(categoriesTable.id, id)).returning();
+  if (!row) throw new Error('NOT_FOUND');
+  return rowToCategory(row);
+}
+
+/** Refuses while anything still sits on the shelf, so nothing is orphaned. */
+export async function deleteCategory(id: string): Promise<void> {
+  await ensureDatabase();
+  const db = getDb();
+  const [used] = await db.select({ total: count() }).from(creationsTable).where(eq(creationsTable.categoryId, id));
+  if (Number(used?.total ?? 0) > 0) throw new Error('CATEGORY_IN_USE');
+  const rows = await db.delete(categoriesTable).where(eq(categoriesTable.id, id)).returning({ id: categoriesTable.id });
+  if (rows.length === 0) throw new Error('NOT_FOUND');
+}
+
+export async function reorderCategories(ids: string[]): Promise<void> {
+  await ensureDatabase();
+  const db = getDb();
+  const now = Date.now();
+  await db.transaction(async (tx) => {
+    for (const [position, id] of ids.entries()) {
+      await tx.update(categoriesTable).set({ position, updatedAt: now }).where(eq(categoriesTable.id, id));
+    }
+  });
 }

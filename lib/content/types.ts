@@ -11,34 +11,7 @@ export type Metric = {
   label: LocalizedText;
 };
 
-export type StoryStep = {
-  id: string;
-  index: string;
-  title: LocalizedText;
-  eyebrow: LocalizedText;
-  body: LocalizedText;
-  stat: LocalizedText;
-  accent: string;
-};
 
-export type Project = {
-  id: string;
-  slug: string;
-  kind: 'project' | 'highlight';
-  category: LocalizedText;
-  title: LocalizedText;
-  summary: LocalizedText;
-  image: string;
-  alt: LocalizedText;
-  accent: string;
-  year: string;
-  tags: string[];
-  href?: string;
-  featured: boolean;
-  visible: boolean;
-  position: number;
-  metrics?: Metric[];
-};
 
 export type GalleryImage = {
   id: string;
@@ -48,6 +21,14 @@ export type GalleryImage = {
   fit?: 'cover' | 'contain';
   /** backdrop behind a `contain` image, so light logos do not float on the page colour. */
   background?: string;
+};
+
+export type VideoClip = {
+  /** file in the blob store, or any direct video URL */
+  src: string;
+  /** still shown before playback; without one the browser shows the first frame */
+  poster?: string;
+  caption: LocalizedText;
 };
 
 export type Swatch = {
@@ -78,46 +59,10 @@ export type ChapterBlock =
   | (BlockBase & { kind: 'quote'; text: LocalizedText; source?: LocalizedText })
   | (BlockBase & { kind: 'entries'; label?: LocalizedText; entries: ChapterEntry[] })
   | (BlockBase & { kind: 'swatches'; label?: LocalizedText; colors: Swatch[] })
-  | (BlockBase & { kind: 'chips'; label?: LocalizedText; items: LocalizedText[] });
+  | (BlockBase & { kind: 'chips'; label?: LocalizedText; items: LocalizedText[] })
+  | (BlockBase & { kind: 'video'; label?: LocalizedText; note?: LocalizedText; clip: VideoClip });
 
-/** Each chapter is composed differently; the layout picks which one. */
-export type ChapterLayout =
-  | 'broadcast'
-  | 'manual'
-  | 'split'
-  | 'contact-sheet'
-  | 'photo-essay'
-  | 'dossier'
-  | 'playful';
 
-export type Chapter = {
-  id: string;
-  /** anchor used by the chapter index and the deep links */
-  anchor: string;
-  index: string;
-  nav: LocalizedText;
-  kicker: LocalizedText;
-  title: LocalizedText;
-  lead: LocalizedText;
-  /** the personal part: one paragraph per entry */
-  body: LocalizedText[];
-  accent: string;
-  /** alternating background, so consecutive chapters stay visually separated */
-  tone: 'ink' | 'paper';
-  layout: ChapterLayout;
-  /** id of the story step this chapter answers, printed in the header as a back-link */
-  reasonId: string;
-  /** scrolling strip, only used by the broadcast layout */
-  marquee?: LocalizedText;
-  /** decorative canvas rendered inside the chapter */
-  visual?: 'constellation';
-  cover?: GalleryImage;
-  link?: { href: string; label: LocalizedText };
-  footnote?: LocalizedText;
-  blocks: ChapterBlock[];
-  /** project slugs already told in full here, so the archive does not repeat them */
-  coveredSlugs: string[];
-};
 
 /** A shelf in the cabin. Categories carry the colour; creations inherit it. */
 export type Category = {
@@ -162,10 +107,6 @@ export type SiteContent = {
     title: LocalizedText;
     lead: LocalizedText;
   };
-  metrics: Metric[];
-  story: StoryStep[];
-  chapters: Chapter[];
   categories: Category[];
   creations: Creation[];
-  projects: Project[];
 };

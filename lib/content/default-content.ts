@@ -1,7 +1,11 @@
-import { chapters } from './chapters';
 import { categories, creations } from './creations';
 import type { SiteContent } from './types';
 
+/**
+ * The safety net. The database is the source of truth once the panel has been
+ * used, but if it is unreachable — or has not been seeded yet — the site still
+ * renders this, so a connection problem never shows an empty wall.
+ */
 export const defaultContent: SiteContent = {
   hero: {
     eyebrow: { pt: 'CRIAÇÕES DO GUSTAVO · 2026', en: 'GUSTAVO’S MAKES · 2026' },
@@ -14,139 +18,6 @@ export const defaultContent: SiteContent = {
       en: 'I create on several fronts, and not all of it has to do with code: a football channel with 26 million views, a brand I helped build from scratch, my studies organised my own way, a phase as an athlete, a volunteering day at a public school and things made laughing with friends.',
     },
   },
-  chapters,
   categories,
   creations,
-  metrics: [
-    { id: 'fronts', value: '07', label: { pt: 'frentes que eu toco ao mesmo tempo', en: 'fronts I keep going at once' } },
-    { id: 'views', value: '26,6 mi', label: { pt: 'meu sonho de ser youtuber, em visualizações', en: 'my dream of being a youtuber, in views' } },
-    { id: 'systems', value: '02', label: { pt: 'sistemas pra eu não esquecer o que estudo', en: 'systems so I never lose what I study' } },
-    { id: 'projects', value: '01', label: { pt: 'site feito de presente, sem cliente nem prazo', en: 'site made as a gift, no client, no deadline' } },
-  ],
-  story: [
-    {
-      id: 'curiosity', index: '01',
-      eyebrow: { pt: 'COMEÇOU COM UMA DÚVIDA', en: 'IT STARTED AS A QUESTION' },
-      title: { pt: 'Curiosidade', en: 'Curiosity' },
-      body: { pt: 'Abri o Canal Decisão só pra ver se alguém assistiria. Trezentos e vinte vídeos depois, eu ainda quero saber.', en: 'I started Canal Decisão just to see if anyone would watch. Three hundred and twenty videos later, I still want to know.' },
-      stat: { pt: 'POR QUÊ?', en: 'WHY?' }, accent: '#ff6b4a',
-    },
-    {
-      id: 'play', index: '02',
-      eyebrow: { pt: 'SEM PRETENSÃO NENHUMA', en: 'NO AMBITION AT ALL' },
-      title: { pt: 'Brincadeira', en: 'Play' },
-      body: { pt: 'O ABIMABALL nasceu de piada interna com os amigos. Foi bem mais divertido de programar do que de jogar.', en: 'ABIMABALL came out of an inside joke with friends. It was far more fun to build than to play.' },
-      stat: { pt: 'ZOEIRA', en: 'PLAY' }, accent: '#76d7c4',
-    },
-    {
-      id: 'deep-dive', index: '03',
-      eyebrow: { pt: 'QUANDO A IDEIA FICA', en: 'WHEN THE IDEA STICKS' },
-      title: { pt: 'Mergulho', en: 'Deep dive' },
-      body: { pt: 'O manual da Mirtillo já está na versão 2.0. Toda revisão mexe em posicionamento, cor e jeito de falar.', en: 'The Mirtillo brand manual is already on version 2.0. Every pass touches positioning, colour and tone of voice.' },
-      stat: { pt: 'DE NOVO', en: 'AGAIN' }, accent: '#b7a6ff',
-    },
-    {
-      id: 'affection', index: '04',
-      eyebrow: { pt: 'POR UMA PESSOA', en: 'FOR ONE PERSON' },
-      title: { pt: 'Afeto', en: 'Affection' },
-      body: { pt: 'Fiz um site inteiro de presente pra alguém importante. Sem cliente, sem prazo e sem outro motivo.', en: 'I built a whole website as a gift for someone important. No client, no deadline and no other reason.' },
-      stat: { pt: '<3', en: '<3' }, accent: '#f6c760',
-    },
-    {
-      id: 'trace', index: '05',
-      eyebrow: { pt: 'PRA NÃO SUMIR', en: 'SO IT DOES NOT VANISH' },
-      title: { pt: 'Rastro', en: 'A trace' },
-      body: { pt: 'As fotos de quando eu jogava futebol não viraram projeto nenhum. Mesmo assim, guardei todas.', en: 'The photos from when I played football never became a project. I kept every one of them anyway.' },
-      stat: { pt: 'GUARDEI', en: 'KEEP' }, accent: '#ff7fac',
-    },
-  ],
-  projects: [
-    {
-      id: 'canal-decisao', slug: 'canal-decisao', kind: 'highlight',
-      category: { pt: 'Conteúdo & mídia', en: 'Content & media' },
-      title: { pt: 'Canal Decisão', en: 'Canal Decisão' },
-      summary: { pt: 'Futebol em vídeo — da pauta ao corte final, com identidade própria e comunidade ativa.', en: 'Football on video — from story to final cut, with its own identity and an active community.' },
-      image: '/media/decisao/banner-canal.png',
-      alt: { pt: 'Banner do Canal Decisão', en: 'Canal Decisão banner' },
-      accent: '#ff6b4a', year: '2026', tags: ['YouTube', 'CapCut', 'Brand'],
-      href: 'https://www.youtube.com/@ocanaldecisao', featured: true, visible: true, position: 0,
-      metrics: [
-        { id: 'subs', value: '25,1 mil', label: { pt: 'inscritos', en: 'subscribers' } },
-        { id: 'videos', value: '320', label: { pt: 'vídeos', en: 'videos' } },
-        { id: 'views', value: '26,6 mi', label: { pt: 'visualizações', en: 'views' } },
-      ],
-    },
-    {
-      id: 'mirtillo', slug: 'mirtillo', kind: 'highlight',
-      category: { pt: 'Design & marca', en: 'Design & brand' },
-      title: { pt: 'Mirtillo', en: 'Mirtillo' },
-      summary: { pt: 'Posicionamento, identidade e uma linguagem visual feita para mostrar o próximo passo.', en: 'Positioning, identity and a visual language made to reveal the next step.' },
-      image: '/media/mirtillo/mirtillo-app.png',
-      alt: { pt: 'Interface da marca Mirtillo', en: 'Mirtillo brand interface' },
-      accent: '#f6c760', year: '2026', tags: ['Identity', 'Strategy', 'UI'],
-      featured: true, visible: true, position: 1,
-    },
-    {
-      id: 'notion', slug: 'sistema-notion', kind: 'project',
-      category: { pt: 'Estudos & sistemas', en: 'Learning systems' },
-      title: { pt: 'Sistema de estudos', en: 'Learning system' },
-      summary: { pt: 'Períodos, matérias, tarefas e anotações conectados em um espaço que acompanha o aprendizado.', en: 'Terms, classes, tasks and notes connected in a space that follows the learning process.' },
-      image: '/media/notion/notion-01-cover-planner.png',
-      alt: { pt: 'Capa do planner no Notion', en: 'Notion planner cover' },
-      accent: '#68c9ff', year: '2026', tags: ['Notion', 'Obsidian', 'AI'],
-      featured: false, visible: true, position: 2,
-    },
-    {
-      id: 'futebol', slug: 'futebol', kind: 'project',
-      category: { pt: 'Esporte', en: 'Sports' },
-      title: { pt: 'Antes de programar, eu jogava', en: 'Before coding, I played' },
-      summary: { pt: 'Registros de uma fase competitiva que ainda influencia meu jeito de trabalhar em equipe.', en: 'Records from a competitive phase that still shapes how I work with a team.' },
-      image: '/media/esporte/partida.jpg',
-      alt: { pt: 'Gustavo em uma partida de futebol', en: 'Gustavo during a football match' },
-      accent: '#76d796', year: 'Arquivo', tags: ['Football', 'Team'],
-      featured: false, visible: true, position: 3,
-    },
-    {
-      id: 'voluntariado', slug: 'dia-do-voluntario', kind: 'project',
-      category: { pt: 'Impacto social', en: 'Social impact' },
-      title: { pt: 'Dia do Voluntário', en: 'Volunteer Day' },
-      summary: { pt: 'Jardinagem, reforma e atividades com as crianças no Colégio Estadual Deputado Olívio Belich.', en: 'Gardening, renovation and activities with children at Colégio Estadual Deputado Olívio Belich.' },
-      image: '/media/voluntariado/01-grupo.jpg',
-      alt: { pt: 'Grupo do Dia do Voluntário', en: 'Volunteer Day group' },
-      accent: '#76d7c4', year: '2025', tags: ['Community', 'Vivo'],
-      featured: false, visible: true, position: 4,
-    },
-    {
-      id: 'newscope', slug: 'newscope-pibic', kind: 'project',
-      category: { pt: 'Pesquisa', en: 'Research' },
-      title: { pt: 'NewsScope · PIBIC', en: 'NewsScope · PIBIC' },
-      summary: { pt: 'Interface web para análise automatizada de notícias, desenvolvida em iniciação científica.', en: 'A web interface for automated news analysis, developed during undergraduate research.' },
-      image: '/media/comprovacoes/feedback-professor.png',
-      alt: { pt: 'Registro do professor sobre o projeto PIBIC', en: 'Professor note about the PIBIC project' },
-      accent: '#b7a6ff', year: '2026', tags: ['React', 'Research', 'ENoW'],
-      featured: false, visible: true, position: 5,
-    },
-    {
-      id: 'site-presente', slug: 'site-presente', kind: 'project',
-      category: { pt: 'Projeto pessoal', en: 'Personal project' },
-      title: { pt: 'Um site de presente', en: 'A website as a gift' },
-      summary: { pt: 'Uma experiência construída com carinho, sem cliente e sem prazo.', en: 'An experience built with care, with no client and no deadline.' },
-      image: '/media/pessoais/site-presente.png',
-      alt: { pt: 'Capa do site de presente', en: 'Gift website cover' },
-      accent: '#ff7fac', year: '2025', tags: ['Web', 'Personal'],
-      href: 'https://gusggk.github.io/WebSite_by_My_GirlFriend/index-intro.html',
-      featured: false, visible: true, position: 6,
-    },
-    {
-      id: 'abimaball', slug: 'abimaball', kind: 'project',
-      category: { pt: 'Jogo entre amigos', en: 'A game among friends' },
-      title: { pt: 'ABIMABALL', en: 'ABIMABALL' },
-      summary: { pt: 'Um jogo em Java simples, cheio de piadas internas e divertido de construir.', en: 'A simple Java game, full of inside jokes and fun to build.' },
-      image: '/media/pessoais/abimaball.png',
-      alt: { pt: 'Captura do jogo ABIMABALL', en: 'ABIMABALL game screenshot' },
-      accent: '#ff7fac', year: '2025', tags: ['Java', 'Game'],
-      href: 'https://github.com/GusGgk/AbimaBall',
-      featured: false, visible: true, position: 7,
-    },
-  ],
 };
