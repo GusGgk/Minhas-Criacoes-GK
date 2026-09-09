@@ -16,7 +16,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "assets:extract": "node scripts/extract-legacy-assets.mjs",
-    "assets:favicon": "node scripts/generate-favicon.mjs"
+    "assets:favicon": "node scripts/generate-favicon.mjs",
+    "check:content": "node scripts/run-ts.mjs scripts/check-creation-parser.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "1.1.0",
