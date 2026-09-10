@@ -5,7 +5,9 @@
 import { useCallback, useMemo, useState, type FormEvent } from 'react';
 import { BLOCK_LABELS, BlockEditor, blankBlock, type BlockKind } from './BlockEditor';
 import { MediaLibrary } from './MediaLibrary';
-import type { Category, ChapterBlock, Creation, GalleryImage, LocalizedText } from '@/lib/content/types';
+import { ShelvesAdmin } from './ShelvesAdmin';
+import { HomeTextsAdmin } from './HomeTextsAdmin';
+import type { Category, ChapterBlock, Creation, GalleryImage, LocalizedText, SiteContent } from '@/lib/content/types';
 
 type Draft = Creation & { visible: boolean };
 type Listed = Creation & { visible: boolean; position: number };
@@ -36,16 +38,18 @@ function blankDraft(categoryId: string): Draft {
 export function CreationsAdmin({
   initialCreations,
   initialCategories,
+  initialHero,
   userName,
   signOutPath,
 }: {
   initialCreations: Listed[];
   initialCategories: (Category & { visible: boolean; position: number })[];
+  initialHero: SiteContent['hero'];
   userName: string;
   signOutPath: string;
 }) {
   const [items, setItems] = useState(initialCreations);
-  const [categories] = useState(initialCategories);
+  const [categories, setCategories] = useState(initialCategories);
   const [draft, setDraft] = useState<Draft>(() => blankDraft(initialCategories[0]?.id ?? ''));
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
@@ -346,6 +350,8 @@ export function CreationsAdmin({
         </form>
 
         <aside className="admin-list">
+          <HomeTextsAdmin initial={initialHero} />
+          <ShelvesAdmin initial={initialCategories} onChanged={setCategories} />
           <MediaLibrary />
           <div className="admin-list__head"><span>NA PAREDE</span><strong>{items.length}</strong></div>
           {sorted.map((item, index) => (

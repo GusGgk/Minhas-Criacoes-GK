@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { CreationsAdmin } from '@/components/admin/CreationsAdmin';
 import { requireAdminPage } from '@/lib/auth/admin';
-import { listAllCategories, listAllCreations } from '@/lib/content/repository';
+import { getHero, listAllCategories, listAllCreations } from '@/lib/content/repository';
 import './admin.css';
 
 export const dynamic = 'force-dynamic';
@@ -38,8 +38,9 @@ export default async function AdminPage() {
   // throwing a stack trace at whoever opened it.
   let creations: Awaited<ReturnType<typeof listAllCreations>>;
   let categories: Awaited<ReturnType<typeof listAllCategories>>;
+  let hero: Awaited<ReturnType<typeof getHero>>;
   try {
-    [creations, categories] = await Promise.all([listAllCreations(), listAllCategories()]);
+    [creations, categories, hero] = await Promise.all([listAllCreations(), listAllCategories(), getHero()]);
   } catch (error) {
     console.error('Admin could not reach the database:', error);
     return (
@@ -60,6 +61,7 @@ export default async function AdminPage() {
     <CreationsAdmin
       initialCreations={creations}
       initialCategories={categories}
+      initialHero={hero}
       userName={access.user.name}
       signOutPath={SIGN_OUT_PATH}
     />
