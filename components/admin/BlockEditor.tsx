@@ -2,6 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element -- admin previews point at arbitrary uploaded URLs. */
 
+import { embedUrl } from '@/lib/content/embed';
 import type { ChapterBlock, GalleryImage, LocalizedText } from '@/lib/content/types';
 
 export type BlockKind = ChapterBlock['kind'];
@@ -190,16 +191,18 @@ export function BlockEditor({
         <div className="ab-item">
           <div className="ab-video">
             <div className="ab-video__frame">
-              {block.clip.src
-                ? <video src={block.clip.src} poster={block.clip.poster} controls preload="metadata" />
-                : <span>sem vídeo</span>}
+              {!block.clip.src
+                ? <span>sem vídeo</span>
+                : embedUrl(block.clip.src)
+                  ? <iframe src={embedUrl(block.clip.src)!} title="Prévia do vídeo" allowFullScreen />
+                  : <video src={block.clip.src} poster={block.clip.poster} controls preload="metadata" />}
             </div>
             <div className="ab-image__fields">
               <label>
-                Arquivo de vídeo
+                Arquivo de vídeo ou link do YouTube
                 <input
                   value={block.clip.src}
-                  placeholder="/media/... ou https://..."
+                  placeholder="https://youtu.be/... ou /media/..."
                   onChange={(e) => onChange({ ...block, clip: { ...block.clip, src: e.target.value } })}
                 />
               </label>

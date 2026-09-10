@@ -1050,7 +1050,8 @@ a.chapter-entry:hover .chapter-entry__arrow { transform: translate(4px, -4px); }
 }
 
 .chapter-video { margin: 0; }
-.chapter-video video {
+.chapter-video video,
+.chapter-video iframe {
   width: 100%;
   display: block;
   aspect-ratio: var(--ratio-wide);

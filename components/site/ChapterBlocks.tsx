@@ -4,6 +4,7 @@
 
 import { Fragment, type ReactNode } from 'react';
 import { MetricValue } from './MetricValue';
+import { embedUrl } from '@/lib/content/embed';
 import type { ChapterBlock, GalleryImage, Locale } from '@/lib/content/types';
 
 export type OpenGallery = (images: GalleryImage[], index: number) => void;
@@ -135,22 +136,35 @@ function Block({ block, locale, onOpen }: { block: ChapterBlock; locale: Locale;
         </section>
       );
 
-    case 'video':
+    case 'video': {
+      // A YouTube or Vimeo link is a page, not a stream: it needs an iframe.
+      const embed = embedUrl(block.clip.src);
       return (
         <section className="chapter-block chapter-block--video">
           <BlockLabel text={block.label?.[locale]} note={block.note?.[locale]} />
           <figure className="chapter-video">
-            <video
-              src={block.clip.src}
-              poster={block.clip.poster}
-              controls
-              playsInline
-              preload="metadata"
-            />
+            {embed ? (
+              <iframe
+                src={embed}
+                title={block.clip.caption[locale] || block.label?.[locale] || 'Vídeo'}
+                loading="lazy"
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : (
+              <video
+                src={block.clip.src}
+                poster={block.clip.poster}
+                controls
+                playsInline
+                preload="metadata"
+              />
+            )}
             {block.clip.caption[locale] && <figcaption>{block.clip.caption[locale]}</figcaption>}
           </figure>
         </section>
       );
+    }
 
     case 'chips':
       return (
