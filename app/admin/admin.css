@@ -267,3 +267,17 @@ body { background: #0b0c0b; }
 .ml__item figcaption { display: grid; gap: 2px; }
 .ml__item figcaption strong { font-size: 12px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ml__item figcaption span { color: #6f665e; font-size: 11px; }
+
+.sh__list { margin: 0 0 14px; padding: 0; list-style: none; display: grid; gap: 6px; }
+.sh__list li {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  border: 1px solid rgba(242, 238, 231, .1);
+  border-radius: 6px;
+}
+.sh__list li.is-hidden { opacity: .5; }
+.sh__list li i { width: 10px; height: 10px; border-radius: 3px; }
+.sh__list li span { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
