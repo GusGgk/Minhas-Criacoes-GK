@@ -7,6 +7,7 @@ import type {
   GalleryImage,
   LocalizedText,
   Metric,
+  SiteContent,
   Swatch,
 } from './types';
 import { ValidationError } from './validation';
@@ -228,5 +229,15 @@ export function parseCategoryInput(value: unknown): EditableCategory {
     accent: hex(input.accent, 'Cor', '#ff6b4a'),
     empty,
     visible: input.visible !== false,
+  };
+}
+
+export function parseHeroInput(value: unknown): SiteContent['hero'] {
+  if (!value || typeof value !== 'object') throw new ValidationError('Conteúdo inválido.');
+  const input = value as Record<string, unknown>;
+  return {
+    eyebrow: localized(input.eyebrow, 'Linha de cima', 120, false),
+    title: localized(input.title, 'Título da home', 200),
+    lead: localized(input.lead, 'Texto de apresentação', 1200, false),
   };
 }

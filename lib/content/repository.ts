@@ -1,7 +1,7 @@
 import { asc, count, eq, max } from 'drizzle-orm';
 import { ensureDatabase } from '@/db/bootstrap';
 import { getDb } from '@/db/index';
-import { categories as categoriesTable, creations as creationsTable } from '@/db/schema';
+import { categories as categoriesTable, creations as creationsTable, siteSettings } from '@/db/schema';
 import { defaultContent } from './default-content';
 import type { Category, Creation, SiteContent } from './types';
 import type { EditableCategory, EditableCreation } from './creation-validation';
@@ -61,9 +61,10 @@ async function readCabin() {
 export async function getPublishedContent(): Promise<SiteContent> {
   try {
     await ensureDatabase();
-    const cabin = await readCabin();
+    const [cabin, hero] = await Promise.all([readCabin(), readHero()]);
     return {
       ...defaultContent,
+      hero: hero ?? defaultContent.hero,
       // An empty cabin means the seed has not run yet, so keep the bundled one
       // rather than rendering a site with no shelves at all.
       categories: cabin.categories.length ? cabin.categories : defaultContent.categories,
@@ -210,4 +211,37 @@ export async function reorderCategories(ids: string[]): Promise<void> {
       await tx.update(categoriesTable).set({ position, updatedAt: now }).where(eq(categoriesTable.id, id));
     }
   });
+}
+
+/* ---------------------------------------------------------------
+   Home texts. One row in site_settings, so the wall's opening lines
+   are editable without a table of their own.
+   --------------------------------------------------------------- */
+
+const HERO_KEY = 'hero';
+
+async function readHero(): Promise<SiteContent['hero'] | null> {
+  const [row] = await getDb().select().from(siteSettings).where(eq(siteSettings.key, HERO_KEY));
+  if (!row) return null;
+  try {
+    return JSON.parse(row.valueJson) as SiteContent['hero'];
+  } catch {
+    // A malformed row should not blank the page; the bundled text takes over.
+    console.warn('Hero salvo está corrompido, usando o texto do código.');
+    return null;
+  }
+}
+
+export async function getHero(): Promise<SiteContent['hero']> {
+  await ensureDatabase();
+  return (await readHero()) ?? defaultContent.hero;
+}
+
+export async function saveHero(hero: SiteContent['hero']): Promise<SiteContent['hero']> {
+  await ensureDatabase();
+  const now = Date.now();
+  await getDb().insert(siteSettings)
+    .values({ key: HERO_KEY, valueJson: JSON.stringify(hero), updatedAt: now })
+    .onConflictDoUpdate({ target: siteSettings.key, set: { valueJson: JSON.stringify(hero), updatedAt: now } });
+  return hero;
 }
