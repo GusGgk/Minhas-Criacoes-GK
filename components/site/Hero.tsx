@@ -1,4 +1,4 @@
-import { LifeTimeline } from '@/components/motion/LifeTimeline';
+import { PortraitReveal } from '@/components/motion/PortraitReveal';
 import type { Locale, SiteContent } from '@/lib/content/types';
 
 export function Hero({ locale, onToggleLocale, theme, onToggleTheme, content }: {
@@ -59,12 +59,15 @@ export function Hero({ locale, onToggleLocale, theme, onToggleTheme, content }: 
               <span>{locale === 'pt' ? 'Descer pra parede' : 'Down to the wall'}</span>
               <i aria-hidden="true">↘</i>
             </a>
-            <span className="hero__hint">{locale === 'pt' ? 'Percorra a linha' : 'Follow the line'}</span>
+            <span className="hero__hint">
+              <span className="hero__hint--hover">{locale === 'pt' ? 'Passe o mouse no retrato' : 'Hover the portrait'}</span>
+              <span className="hero__hint--touch">{locale === 'pt' ? 'Toque no retrato' : 'Touch the portrait'}</span>
+            </span>
           </div>
         </div>
 
         <div className="hero__visual">
-          <LifeTimeline locale={locale} />
+          <PortraitReveal locale={locale} />
         </div>
       </section>
 

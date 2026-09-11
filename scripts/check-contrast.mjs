@@ -21,9 +21,9 @@ function readTokens(selector) {
   return Object.fromEntries([...body.matchAll(/--([\w-]+)\s*:\s*([^;]+);/g)].map(([, k, v]) => [k, v.trim()]));
 }
 
-/** Every accent the content can hand to a chapter, project or hero moment. */
+/** Every accent the content can hand to a shelf or a creation. */
 function readAccents() {
-  const sources = ['../lib/content/chapters.ts', '../lib/content/default-content.ts', '../lib/content/timeline.ts'];
+  const sources = ['../lib/content/creations.ts', '../lib/content/default-content.ts'];
   const found = new Map();
   for (const source of sources) {
     for (const [, hex] of read(source).matchAll(/accent:\s*'(#[0-9a-fA-F]{6})'/g)) found.set(hex.toLowerCase(), source);

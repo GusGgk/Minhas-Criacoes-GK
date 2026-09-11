@@ -318,111 +318,61 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 }
 .primary-cta:hover { color: var(--on-accent); background: var(--accent); transform: translateY(-2px); }
 .hero__hint { color: var(--text-faint); font: 500 9px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
-.hero__visual { position: relative; min-width: 0; display: flex; align-items: center; min-height: min(62vw, 620px); }
+.hero__visual { position: relative; min-width: 0; display: flex; align-items: flex-end; justify-content: center; }
 
-/* the hero timeline: one vertical thread, lit up to the moment being told */
-.thread {
-  --rail: clamp(62px, 5.6vw, 92px);
-  --dot-y: 23px;
+/* The hero portrait: two cut-outs on one canvas, the kid on top behind a
+   circular mask that follows the pointer. --mx/--my/--r are written by
+   PortraitReveal every frame; nothing else here moves. The mask is a fixed
+   radial gradient whose box is resized and repositioned — cheaper than
+   regenerating a gradient centred on the cursor. */
+.portrait {
+  --mx: 0px;
+  --my: 0px;
+  --r: 0px;
   position: relative;
-  width: 100%;
+  width: min(100%, 560px);
+  aspect-ratio: 4 / 5;
+  margin-inline: auto;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: crosshair;
 }
-.thread__glow {
-  position: absolute;
-  left: var(--rail);
-  top: 50%;
-  width: min(80%, 520px);
-  aspect-ratio: 1;
-  transform: translate(-16%, -50%);
-  border-radius: 50%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--thread-accent) 14%, transparent), transparent 66%);
-  filter: blur(28px);
-  opacity: 0;
-  pointer-events: none;
-  transition: background 700ms ease, opacity 900ms ease;
-}
-.thread[data-drawn='true'] .thread__glow { opacity: 1; }
-.thread__list { position: relative; z-index: 1; margin: 0; padding: 0; list-style: none; }
-.moment {
-  --moment-ink: color-mix(in srgb, var(--moment-accent) var(--accent-mix), var(--accent-mix-base));
-  opacity: 0;
-  transform: translateY(14px);
-  transition:
-    opacity .6s ease calc(var(--i) * 85ms + 120ms),
-    transform .6s cubic-bezier(.22, .8, .2, 1) calc(var(--i) * 85ms + 120ms);
-}
-.thread[data-drawn='true'] .moment { opacity: 1; transform: none; }
-.moment a { display: grid; grid-template-columns: var(--rail) 13px minmax(0, 1fr); align-items: stretch; gap: 0 14px; }
-.moment__when {
-  padding-top: 16px;
-  color: var(--text-ghost);
-  font: 600 9px var(--mono);
-  letter-spacing: .12em;
-  text-align: right;
-  transition: color .45s ease;
-}
-.moment[data-active='true'] .moment__when { color: var(--moment-ink); }
-.moment__rail { position: relative; display: block; }
-.moment__rail::before {
+.portrait::before {
+  /* a warm pool of light behind the head, so the cut-out has ground to sit on */
   content: '';
   position: absolute;
-  left: 6px;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: var(--line);
-  transform: scaleY(0);
-  transform-origin: top;
-  transition:
-    transform .6s cubic-bezier(.22, .8, .2, 1) calc(var(--i) * 85ms + 120ms),
-    background .5s ease calc(var(--i) * 25ms);
-}
-.thread[data-drawn='true'] .moment__rail::before { transform: scaleY(1); }
-.moment[data-passed='true'] .moment__rail::before { background: color-mix(in srgb, var(--moment-ink) 46%, transparent); }
-.moment:first-child .moment__rail::before { top: var(--dot-y); }
-.moment:last-child .moment__rail::before { bottom: calc(100% - var(--dot-y)); }
-.moment__rail i {
-  position: absolute;
-  left: 2px;
-  top: calc(var(--dot-y) - 4.5px);
-  box-sizing: border-box;
-  width: 9px;
-  height: 9px;
-  border: 1px solid var(--line-strong);
+  inset: 6% 8% 18%;
+  z-index: -1;
   border-radius: 50%;
-  background: var(--surface-0);
-  transition: background .45s ease, border-color .45s ease, transform .45s cubic-bezier(.22, .8, .2, 1);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 22%, transparent), transparent 72%);
+  filter: blur(18px);
+  opacity: .9;
 }
-.moment[data-passed='true'] .moment__rail i { border-color: color-mix(in srgb, var(--moment-ink) 58%, transparent); }
-.moment[data-active='true'] .moment__rail i {
-  transform: scale(1.15);
-  border-color: var(--moment-ink);
-  background: var(--moment-ink);
-  animation: moment-pulse 2.6s ease-in-out infinite;
+.portrait img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
 }
-@keyframes moment-pulse {
-  0%, 100% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--moment-accent) 11%, transparent), 0 0 14px color-mix(in srgb, var(--moment-accent) 45%, transparent); }
-  50% { box-shadow: 0 0 0 8px color-mix(in srgb, var(--moment-accent) 5%, transparent), 0 0 22px color-mix(in srgb, var(--moment-accent) 70%, transparent); }
+.portrait__then {
+  -webkit-mask-image: radial-gradient(circle closest-side, #000 58%, transparent 100%);
+  mask-image: radial-gradient(circle closest-side, #000 58%, transparent 100%);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: calc(var(--r) * 2) calc(var(--r) * 2);
+  mask-size: calc(var(--r) * 2) calc(var(--r) * 2);
+  -webkit-mask-position: calc(var(--mx) - var(--r)) calc(var(--my) - var(--r));
+  mask-position: calc(var(--mx) - var(--r)) calc(var(--my) - var(--r));
 }
-.moment__body { padding-block: 12px; }
-.moment__body strong {
-  display: block;
-  color: var(--text-dim);
-  font: 620 clamp(18px, 1.5vw, 23px)/1.15 var(--display);
-  letter-spacing: -.03em;
-  transition: color .45s ease;
+.hero__hint--touch { display: none; }
+@media (hover: none) {
+  .hero__hint--hover { display: none; }
+  .hero__hint--touch { display: inline; }
+  .portrait { cursor: default; }
 }
-.moment a:hover .moment__body strong { color: var(--warm); }
-.moment[data-active='true'] .moment__body strong { color: var(--fg); }
-.moment__note {
-  display: grid;
-  grid-template-rows: 0fr;
-  opacity: 0;
-  transition: grid-template-rows .5s cubic-bezier(.22, .8, .2, 1), opacity .35s ease;
-}
-.moment__note > span { overflow: hidden; max-width: 44ch; color: var(--text-soft); font: 400 13.5px/1.55 var(--body); }
-.moment[data-active='true'] .moment__note { grid-template-rows: 1fr; opacity: 1; }
-.moment[data-active='true'] .moment__note > span { min-height: 3.1em; padding-top: 9px; }
 /* the word is content, so it can be one short token or two ('DE NOVO'):
    centre it and let it break rather than spill out of the circle. */
 .footer {
@@ -1095,12 +1045,7 @@ a.chapter-entry:hover .chapter-entry__arrow { transform: translate(4px, -4px); }
   .primary-cta { width: 100%; }
   .hero__hint { margin-left: 18px; }
   .hero__visual { min-height: 0; margin-top: 10px; }
-  .thread { --rail: 54px; --dot-y: 21px; }
-  .moment a { gap: 0 11px; }
-  .moment__when { padding-top: 14px; }
-  .moment__body { padding-block: 10px; }
-  .moment__body strong { font-size: 19px; }
-  .moment__note > span { font-size: 13px; }
+  .portrait { width: min(100%, 440px); }
   .first-reveal { min-height: 66vh; padding: 90px 20px; }
   .first-reveal h2 { font-size: clamp(46px, 14vw, 68px); }
   .metrics { padding-top: 86px; }
