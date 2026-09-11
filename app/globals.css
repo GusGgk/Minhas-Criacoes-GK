@@ -191,28 +191,19 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 
 .brand, .topbar__actions, .topbar__meta { display: flex; align-items: center; }
 .brand { gap: 13px; justify-self: start; }
+/* The GK mark, shared with the portfolio. It comes in as a mask rather than an
+   <img>: the file is a white glyph on transparency, and white would vanish on
+   the light theme. As a mask the pixel only decides the shape — the colour is
+   currentColor, so the mark follows the theme with a single file.
+   The aspect-ratio is the file's own (164x123): set the height, the width
+   follows and the mark never stretches. */
 .brand__mark {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--line-max);
-  border-radius: 50%;
-  font: 700 12px var(--display);
-  letter-spacing: -0.08em;
-}
-.brand__mark b, .brand__mark i { font-style: normal; }
-.brand__mark i { color: var(--accent-ink); margin-left: -1px; }
-.brand__mark::after {
-  content: '';
-  position: absolute;
-  width: 5px;
-  height: 5px;
-  right: -1px;
-  top: -1px;
-  border-radius: 50%;
-  background: var(--accent);
+  display: block;
+  height: 26px;
+  aspect-ratio: 164 / 123;
+  background-color: currentColor;
+  -webkit-mask: url('/gk-mark.png') no-repeat center / contain;
+  mask: url('/gk-mark.png') no-repeat center / contain;
 }
 .brand__name { color: var(--warm); }
 .topbar__meta { gap: 12px; color: var(--text-dim); justify-self: center; }

@@ -32,6 +32,9 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
+      // The SVG follows the browser's colour scheme on a transparent ground;
+      // the rasters are the dark-tile fallback for browsers without SVG icons.
+      { url: '/favicon.svg', type: 'image/svg+xml' },
       { url: '/favicon.ico', sizes: '48x48' },
       { url: '/favicon-192.png', type: 'image/png', sizes: '192x192' },
     ],

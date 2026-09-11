@@ -14,9 +14,9 @@ export function Hero({ locale, onToggleLocale, theme, onToggleTheme, content }: 
     <>
       <header className="topbar">
         <a className="brand" href="#top" aria-label="Minhas Criações GK — início">
-          <span className="brand__mark"><b>G</b><i>K</i></span>
+          <span className="brand__mark" aria-hidden="true" />
           <span className="brand__name">{locale === 'pt' ? 'MINHAS CRIAÇÕES' : 'MY CREATIONS'}</span>
-        </a> 
+        </a>
         <div className="topbar__meta" aria-hidden="true">
           <span>CURITIBA · BR</span>
           <span className="status-dot" />
