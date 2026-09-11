@@ -321,14 +321,17 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .hero__visual { position: relative; min-width: 0; display: flex; align-items: flex-end; justify-content: center; }
 
 /* The hero portrait: two cut-outs on one canvas, the kid on top behind a
-   circular mask that follows the pointer. --mx/--my/--r are written by
-   PortraitReveal every frame; nothing else here moves. The mask is a fixed
-   radial gradient whose box is resized and repositioned — cheaper than
-   regenerating a gradient centred on the cursor. */
+   mask that follows the pointer. The mask is three soft circles added
+   together — --x0..--r2 are written by PortraitReveal every frame; nothing
+   else here moves. Each layer is the same fixed radial gradient, only resized
+   and repositioned, which is cheaper than regenerating a gradient centred on
+   the cursor. The container's own mask dissolves the bottom of the hoodie
+   into the ground, so the photo's crop line never shows. */
 .portrait {
-  --mx: 0px;
-  --my: 0px;
-  --r: 0px;
+  --x0: 0px; --y0: 0px; --r0: 0px;
+  --x1: 0px; --y1: 0px; --r1: 0px;
+  --x2: 0px; --y2: 0px; --r2: 0px;
+  --blob: radial-gradient(circle closest-side, #000 52%, transparent 100%);
   position: relative;
   width: min(100%, 560px);
   aspect-ratio: 4 / 5;
@@ -337,12 +340,14 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
   user-select: none;
   -webkit-user-select: none;
   cursor: crosshair;
+  -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 97%);
+  mask-image: linear-gradient(to bottom, #000 72%, transparent 97%);
 }
 .portrait::before {
   /* a warm pool of light behind the head, so the cut-out has ground to sit on */
   content: '';
   position: absolute;
-  inset: 6% 8% 18%;
+  inset: 4% 8% 24%;
   z-index: -1;
   border-radius: 50%;
   background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 22%, transparent), transparent 72%);
@@ -358,14 +363,28 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
   pointer-events: none;
 }
 .portrait__then {
-  -webkit-mask-image: radial-gradient(circle closest-side, #000 58%, transparent 100%);
-  mask-image: radial-gradient(circle closest-side, #000 58%, transparent 100%);
+  -webkit-mask-image: var(--blob), var(--blob), var(--blob);
+  mask-image: var(--blob), var(--blob), var(--blob);
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
-  -webkit-mask-size: calc(var(--r) * 2) calc(var(--r) * 2);
-  mask-size: calc(var(--r) * 2) calc(var(--r) * 2);
-  -webkit-mask-position: calc(var(--mx) - var(--r)) calc(var(--my) - var(--r));
-  mask-position: calc(var(--mx) - var(--r)) calc(var(--my) - var(--r));
+  -webkit-mask-composite: source-over;
+  mask-composite: add;
+  -webkit-mask-size:
+    calc(var(--r0) * 2) calc(var(--r0) * 2),
+    calc(var(--r1) * 2) calc(var(--r1) * 2),
+    calc(var(--r2) * 2) calc(var(--r2) * 2);
+  mask-size:
+    calc(var(--r0) * 2) calc(var(--r0) * 2),
+    calc(var(--r1) * 2) calc(var(--r1) * 2),
+    calc(var(--r2) * 2) calc(var(--r2) * 2);
+  -webkit-mask-position:
+    calc(var(--x0) - var(--r0)) calc(var(--y0) - var(--r0)),
+    calc(var(--x1) - var(--r1)) calc(var(--y1) - var(--r1)),
+    calc(var(--x2) - var(--r2)) calc(var(--y2) - var(--r2));
+  mask-position:
+    calc(var(--x0) - var(--r0)) calc(var(--y0) - var(--r0)),
+    calc(var(--x1) - var(--r1)) calc(var(--y1) - var(--r1)),
+    calc(var(--x2) - var(--r2)) calc(var(--y2) - var(--r2));
 }
 .hero__hint--touch { display: none; }
 @media (hover: none) {
