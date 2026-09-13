@@ -4,6 +4,7 @@ import { ensureDatabase } from '@/db/bootstrap';
 import { getDb } from '@/db/index';
 import { mediaAssets } from '@/db/schema';
 import { getAdminApiAccess } from '@/lib/auth/admin';
+import { STORAGE_OFF, storageReady } from '@/lib/storage';
 
 /**
  * Records a file the browser uploaded straight to the blob store.
@@ -18,6 +19,7 @@ export async function POST(request: Request) {
     const code = access.status === 'unauthenticated' ? 401 : access.status === 'unconfigured' ? 503 : 403;
     return NextResponse.json({ error: access.status }, { status: code });
   }
+  if (!storageReady()) return NextResponse.json({ error: STORAGE_OFF }, { status: 503 });
 
   const body = await request.json() as { url?: unknown; filename?: unknown };
   const url = typeof body.url === 'string' ? body.url : '';

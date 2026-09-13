@@ -8,6 +8,14 @@ body { background: #0b0c0b; }
 .admin-header > div:last-child { display: flex; align-items: center; gap: 18px; color: #827a73; font: 500 10px var(--mono); }
 .admin-header p { margin: 0; }
 .admin-header a { padding: 9px 13px; border: 1px solid rgba(242,238,231,.15); border-radius: 999px; color: #bfb6ad; }
+/* Something the panel cannot do right now, said once, above everything. */
+.admin-warn { margin: 22px 0 0; padding: 14px 16px; border: 1px solid rgba(255,107,74,.45); border-radius: 12px; background: rgba(255,107,74,.08); color: #d9cfc5; font: 400 13.5px/1.55 var(--body); }
+.admin-warn strong { color: #ff9279; font-weight: 600; }
+.admin-warn code { padding: 2px 5px; border: 1px solid rgba(242,238,231,.15); border-radius: 4px; color: #ff9279; font-size: 12px; }
+.admin-warn em { font-style: normal; color: #f2eee7; }
+/* The outcome of the last action, pinned to the viewport: an upload from the
+   middle of a long form used to report at the bottom, out of sight. */
+.admin-toast { position: fixed; left: 50%; bottom: 22px; z-index: 20; transform: translateX(-50%); max-width: min(92vw, 720px); margin: 0; padding: 11px 16px; border: 1px solid rgba(242,238,231,.16); border-radius: 999px; background: #1a1b19; color: #e6ded4; box-shadow: 0 18px 50px rgba(0,0,0,.45); font: 500 12px/1.4 var(--mono); }
 .admin-layout { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(360px, .75fr); gap: 24px; margin-top: 30px; align-items: start; }
 .admin-editor, .admin-list { border: 1px solid rgba(242,238,231,.12); border-radius: 24px; background: #121311; box-shadow: 0 30px 90px rgba(0,0,0,.2); }
 .admin-editor { padding: clamp(20px, 3vw, 42px); }
@@ -51,7 +59,6 @@ body { background: #0b0c0b; }
 .admin-submit { display: flex; align-items: center; gap: 18px; margin-top: 22px; }
 .admin-submit button { border: 0; border-radius: 999px; padding: 14px 19px; background: #ff6b4a; color: #10110f; font: 700 10px var(--mono); letter-spacing: .06em; text-transform: uppercase; }
 .admin-submit button:disabled { opacity: .5; cursor: wait; }
-.admin-submit p { margin: 0; color: #b2a9a0; font: 500 11px var(--mono); }
 .admin-list { position: sticky; top: 20px; max-height: calc(100vh - 40px); overflow: auto; padding: 15px; }
 .admin-list__head { display: flex; align-items: center; justify-content: space-between; padding: 8px 7px 18px; }
 .admin-list__head strong { font: 620 26px var(--display); }

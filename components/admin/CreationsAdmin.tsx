@@ -9,6 +9,28 @@ import { ShelvesAdmin } from './ShelvesAdmin';
 import { HomeTextsAdmin } from './HomeTextsAdmin';
 import type { Category, ChapterBlock, Creation, GalleryImage, LocalizedText, SiteContent } from '@/lib/content/types';
 
+const STORAGE_OFF = 'Envio de arquivos desligado: falta a variável BLOB_READ_WRITE_TOKEN no projeto da Vercel.';
+
+/** The body of a failed response, if it is ours; a status-based line otherwise. */
+async function readError(response: Response, fallback: string) {
+  const body = await response.json().catch(() => null) as { error?: string } | null;
+  if (body?.error) return body.error;
+  if (response.status === 401) return 'Sua sessão expirou. Recarregue a página e entre de novo.';
+  if (response.status === 413) return 'Arquivo grande demais para o servidor.';
+  return fallback;
+}
+
+/** The blob client hides why the token route said no, so name the likely reasons. */
+function explainUpload(error: unknown) {
+  const text = error instanceof Error ? error.message : '';
+  if (/client token/i.test(text)) {
+    return 'O servidor não autorizou o envio. Recarregue a página — a sessão pode ter expirado — ou o armazenamento está desconectado.';
+  }
+  if (/content.?type|not allowed/i.test(text)) return 'Tipo de arquivo não aceito. Use JPEG, PNG, WebP, AVIF ou MP4/WebM/MOV.';
+  if (/size|too large|maximum/i.test(text)) return 'Arquivo grande demais: imagens até 12 MB, vídeos até 200 MB.';
+  return text || 'Erro no envio.';
+}
+
 type Draft = Creation & { visible: boolean };
 type Listed = Creation & { visible: boolean; position: number };
 
@@ -39,12 +61,15 @@ export function CreationsAdmin({
   initialCreations,
   initialCategories,
   initialHero,
+  storageReady,
   userName,
   signOutPath,
 }: {
   initialCreations: Listed[];
   initialCategories: (Category & { visible: boolean; position: number })[];
   initialHero: SiteContent['hero'];
+  /** false when BLOB_READ_WRITE_TOKEN is missing: uploads are off, everything else works */
+  storageReady: boolean;
   userName: string;
   signOutPath: string;
 }) {
@@ -58,36 +83,24 @@ export function CreationsAdmin({
   const sorted = useMemo(() => [...items].sort((a, b) => a.position - b.position), [items]);
   const shelfName = (id: string) => categories.find((c) => c.id === id)?.name.pt ?? id;
 
-  const upload = useCallback(async (file: File): Promise<string | null> => {
-    setBusy(true);
-    setMessage('Enviando arquivo…');
-    try {
-      const form = new FormData();
-      form.set('file', file);
-      const response = await fetch('/api/admin/media', { method: 'POST', body: form });
-      const body = await response.json() as { url?: string; error?: string };
-      if (!response.ok || !body.url) throw new Error(body.error ?? 'Falha no envio.');
-      setMessage('Arquivo enviado. Salve a criação para publicar.');
-      return body.url;
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Erro no envio.');
-      return null;
-    } finally {
-      setBusy(false);
-    }
-  }, []);
-
   /**
-   * Video goes browser → blob store directly, because a server route would
-   * reject the body long before the file finished arriving. Only after the
-   * store confirms it do we record the row.
+   * Every file goes browser → blob store directly, then we record the row.
+   * A server route would cap the body at ~4.5 MB on Vercel, which a phone
+   * photo passes; this path never sends the bytes through us. The folder in
+   * the pathname tells the token route what to allow.
    */
-  const uploadVideo = useCallback(async (file: File): Promise<string | null> => {
+  const send = useCallback(async (file: File, folder: 'uploads' | 'videos'): Promise<string | null> => {
+    if (!storageReady) {
+      setMessage(STORAGE_OFF);
+      return null;
+    }
     setBusy(true);
-    setMessage(`Enviando ${file.name}… vídeos grandes demoram.`);
+    setMessage(folder === 'videos' ? `Enviando ${file.name}… vídeos grandes demoram.` : `Enviando ${file.name}…`);
     try {
       const { upload } = await import('@vercel/blob/client');
-      const blob = await upload(`videos/${Date.now()}-${file.name}`, file, {
+      const clean = file.name.toLowerCase().replace(/[^a-z0-9._-]+/g, '-').slice(-90) || 'arquivo';
+      const pathname = folder === 'videos' ? `videos/${clean}` : `uploads/${new Date().getUTCFullYear()}/${clean}`;
+      const blob = await upload(pathname, file, {
         access: 'public',
         handleUploadUrl: '/api/admin/media/client-upload',
         contentType: file.type,
@@ -97,19 +110,19 @@ export function CreationsAdmin({
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ url: blob.url, filename: file.name }),
       });
-      if (!response.ok) {
-        const detail = await response.json().catch(() => ({})) as { error?: string };
-        throw new Error(detail.error ?? 'O vídeo subiu, mas não ficou registrado.');
-      }
-      setMessage('Vídeo enviado. Salve a criação para publicar.');
+      if (!response.ok) throw new Error(await readError(response, 'O arquivo subiu, mas não ficou registrado.'));
+      setMessage(`${file.name} enviado. Salve a criação para publicar.`);
       return blob.url;
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Erro ao enviar o vídeo.');
+      setMessage(explainUpload(error));
       return null;
     } finally {
       setBusy(false);
     }
-  }, []);
+  }, [storageReady]);
+
+  const upload = useCallback((file: File) => send(file, 'uploads'), [send]);
+  const uploadVideo = useCallback((file: File) => send(file, 'videos'), [send]);
 
   const setBlock = (index: number, next: ChapterBlock) =>
     setDraft((d) => ({ ...d, blocks: d.blocks.map((b, i) => i === index ? next : b) }));
@@ -201,6 +214,14 @@ export function CreationsAdmin({
         <div><span>GK / CMS</span><h1>Minhas criações</h1></div>
         <div><p>{userName}</p><a href="/" target="_blank">Ver site ↗</a><a href={signOutPath}>Sair</a></div>
       </header>
+
+      {!storageReady && (
+        <p className="admin-warn" role="alert">
+          <strong>Envio de arquivos desligado.</strong> Falta a variável <code>BLOB_READ_WRITE_TOKEN</code> no projeto da Vercel:
+          em <em>Storage</em>, abra o Blob store e conecte-o de novo a este projeto, depois faça Redeploy. Textos, prateleiras
+          e endereços colados à mão continuam funcionando.
+        </p>
+      )}
 
       <div className="admin-layout">
         <form className="admin-editor" onSubmit={save}>
@@ -345,8 +366,8 @@ export function CreationsAdmin({
 
           <div className="admin-submit">
             <button type="submit" disabled={busy}>{busy ? 'Salvando…' : editing ? 'Publicar alterações' : 'Adicionar à parede'}</button>
-            <p role="status">{message}</p>
           </div>
+          {message && <p className="admin-toast" role="status">{message}</p>}
         </form>
 
         <aside className="admin-list">

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { CreationsAdmin } from '@/components/admin/CreationsAdmin';
 import { requireAdminPage } from '@/lib/auth/admin';
 import { getHero, listAllCategories, listAllCreations } from '@/lib/content/repository';
+import { storageReady } from '@/lib/storage';
 import './admin.css';
 
 export const dynamic = 'force-dynamic';
@@ -62,6 +63,7 @@ export default async function AdminPage() {
       initialCreations={creations}
       initialCategories={categories}
       initialHero={hero}
+      storageReady={storageReady()}
       userName={access.user.name}
       signOutPath={SIGN_OUT_PATH}
     />
