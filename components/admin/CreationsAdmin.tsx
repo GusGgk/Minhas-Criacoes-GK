@@ -9,7 +9,7 @@ import { ShelvesAdmin } from './ShelvesAdmin';
 import { HomeTextsAdmin } from './HomeTextsAdmin';
 import type { Category, ChapterBlock, Creation, GalleryImage, LocalizedText, SiteContent } from '@/lib/content/types';
 
-const STORAGE_OFF = 'Envio de arquivos desligado: falta a variável BLOB_READ_WRITE_TOKEN no projeto da Vercel.';
+const STORAGE_OFF = 'Envio de arquivos desligado: nenhum Blob store ligado a este projeto na Vercel.';
 
 /** The body of a failed response, if it is ours; a status-based line otherwise. */
 async function readError(response: Response, fallback: string) {
@@ -23,9 +23,10 @@ async function readError(response: Response, fallback: string) {
 /** The blob client hides why the token route said no, so name the likely reasons. */
 function explainUpload(error: unknown) {
   const text = error instanceof Error ? error.message : '';
-  if (/client token/i.test(text)) {
+  if (/client token|presigned url/i.test(text)) {
     return 'O servidor não autorizou o envio. Recarregue a página — a sessão pode ter expirado — ou o armazenamento está desconectado.';
   }
+  if (/private/i.test(text)) return 'O Blob store é privado; o site precisa de um store público. Crie um novo como Public em Storage.';
   if (/content.?type|not allowed/i.test(text)) return 'Tipo de arquivo não aceito. Use JPEG, PNG, WebP, AVIF ou MP4/WebM/MOV.';
   if (/size|too large|maximum/i.test(text)) return 'Arquivo grande demais: imagens até 12 MB, vídeos até 200 MB.';
   return text || 'Erro no envio.';
@@ -97,10 +98,10 @@ export function CreationsAdmin({
     setBusy(true);
     setMessage(folder === 'videos' ? `Enviando ${file.name}… vídeos grandes demoram.` : `Enviando ${file.name}…`);
     try {
-      const { upload } = await import('@vercel/blob/client');
+      const { uploadPresigned } = await import('@vercel/blob/client');
       const clean = file.name.toLowerCase().replace(/[^a-z0-9._-]+/g, '-').slice(-90) || 'arquivo';
       const pathname = folder === 'videos' ? `videos/${clean}` : `uploads/${new Date().getUTCFullYear()}/${clean}`;
-      const blob = await upload(pathname, file, {
+      const blob = await uploadPresigned(pathname, file, {
         access: 'public',
         handleUploadUrl: '/api/admin/media/client-upload',
         contentType: file.type,
@@ -217,9 +218,9 @@ export function CreationsAdmin({
 
       {!storageReady && (
         <p className="admin-warn" role="alert">
-          <strong>Envio de arquivos desligado.</strong> Falta a variável <code>BLOB_READ_WRITE_TOKEN</code> no projeto da Vercel:
-          em <em>Storage</em>, abra o Blob store e conecte-o de novo a este projeto, depois faça Redeploy. Textos, prateleiras
-          e endereços colados à mão continuam funcionando.
+          <strong>Envio de arquivos desligado.</strong> Nenhum Blob store está ligado a este projeto na Vercel: em
+          <em>Storage</em>, crie um store <em>Public</em> (ou abra o existente), conecte-o a este projeto e faça Redeploy.
+          Textos, prateleiras e endereços colados à mão continuam funcionando.
         </p>
       )}
 

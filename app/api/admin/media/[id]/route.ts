@@ -5,6 +5,7 @@ import { ensureDatabase } from '@/db/bootstrap';
 import { getDb } from '@/db/index';
 import { mediaAssets } from '@/db/schema';
 import { getAdminApiAccess } from '@/lib/auth/admin';
+import { blobAuth } from '@/lib/storage';
 
 type Context = { params: Promise<{ id: string }> };
 
@@ -30,7 +31,7 @@ export async function DELETE(_request: Request, context: Context) {
   // Drop the row even if the store already lost the file, so the library does
   // not keep listing something that cannot be shown.
   try {
-    await del(asset.url);
+    await del(asset.url, blobAuth());
   } catch (error) {
     console.warn('Blob já não estava lá:', error);
   }
