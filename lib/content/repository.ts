@@ -149,12 +149,11 @@ export async function reorderCreations(ids: string[]): Promise<void> {
   await ensureDatabase();
   const db = getDb();
   const now = Date.now();
-  // Small lists, and a transaction keeps the wall from showing a half-applied order.
-  await db.transaction(async (tx) => {
-    for (const [position, id] of ids.entries()) {
-      await tx.update(creationsTable).set({ position, updatedAt: now }).where(eq(creationsTable.id, id));
-    }
-  });
+  // One atomic round trip, so the wall never shows a half-applied order. The
+  // HTTP driver has no db.transaction(); batch() is its transaction.
+  const [first, ...rest] = ids.map((id, position) =>
+    db.update(creationsTable).set({ position, updatedAt: now }).where(eq(creationsTable.id, id)));
+  if (first) await db.batch([first, ...rest]);
 }
 
 export async function createCategory(input: EditableCategory): Promise<Category> {
@@ -206,11 +205,9 @@ export async function reorderCategories(ids: string[]): Promise<void> {
   await ensureDatabase();
   const db = getDb();
   const now = Date.now();
-  await db.transaction(async (tx) => {
-    for (const [position, id] of ids.entries()) {
-      await tx.update(categoriesTable).set({ position, updatedAt: now }).where(eq(categoriesTable.id, id));
-    }
-  });
+  const [first, ...rest] = ids.map((id, position) =>
+    db.update(categoriesTable).set({ position, updatedAt: now }).where(eq(categoriesTable.id, id)));
+  if (first) await db.batch([first, ...rest]);
 }
 
 /* ---------------------------------------------------------------
