@@ -290,7 +290,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
   color: var(--warm);
   font: 400 clamp(17px, 1.35vw, 22px)/1.48 var(--body);
 }
-.hero__cta-row { display: flex; align-items: center; gap: 26px; margin-top: 40px; }
+.hero__cta-row { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 18px; margin-top: 40px; }
 .primary-cta {
   min-width: 220px;
   display: inline-flex;
@@ -317,7 +317,40 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
   font: 700 16px var(--body);
 }
 .primary-cta:hover { color: var(--on-accent); background: var(--accent); transform: translateY(-2px); }
-.hero__hint { color: var(--text-faint); font: 500 9px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+
+/* The way out to the technical side: same pill, quieter — hairline and ink
+   instead of the accent, so the wall stays the first thing to press. */
+.secondary-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 17px 15px 19px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--warm);
+  font: 650 10px var(--mono);
+  letter-spacing: .09em;
+  transition: color 250ms ease, border-color 250ms ease, transform 250ms ease;
+}
+.secondary-cta i { font: 700 15px var(--body); color: var(--accent-ink); transition: transform 250ms ease; }
+.secondary-cta:hover { color: var(--fg); border-color: var(--line-max); transform: translateY(-2px); }
+.secondary-cta:hover i { transform: translate(2px, -2px); }
+
+/* Two small rounds, as quiet as the hairlines; they light up on hover only. */
+.hero__social { display: inline-flex; align-items: center; gap: 8px; margin-left: 4px; }
+.hero__social a {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--text-dim);
+  transition: color 250ms ease, border-color 250ms ease, background 250ms ease, transform 250ms ease;
+}
+.hero__social a:hover { color: var(--fg); border-color: var(--line-max); background: var(--wash-mid); transform: translateY(-2px); }
+
+.hero__hint { margin: 18px 0 0 6px; color: var(--text-faint); font: 500 9px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
 .hero__visual { position: relative; min-width: 0; display: flex; align-items: flex-end; justify-content: center; }
 
 /* The hero portrait: two cut-outs on one canvas, the kid on top behind a
@@ -1060,9 +1093,10 @@ a.chapter-entry:hover .chapter-entry__arrow { transform: translate(4px, -4px); }
   .hero::before, .hero::after { inset-block-start: 72px; }
   .hero h1 { font-size: clamp(52px, 16vw, 72px); line-height: .91; }
   .hero__lead { margin-top: 25px; font-size: 17px; }
-  .hero__cta-row { align-items: flex-start; flex-direction: column; gap: 14px; margin-top: 30px; }
-  .primary-cta { width: 100%; }
-  .hero__hint { margin-left: 18px; }
+  .hero__cta-row { gap: 12px; margin-top: 30px; }
+  .primary-cta, .secondary-cta { width: 100%; justify-content: space-between; }
+  .hero__social { width: 100%; margin-left: 0; }
+  .hero__hint { margin-left: 2px; }
   .hero__visual { min-height: 0; margin-top: 10px; }
   .portrait { width: min(100%, 440px); }
   .first-reveal { min-height: 66vh; padding: 90px 20px; }

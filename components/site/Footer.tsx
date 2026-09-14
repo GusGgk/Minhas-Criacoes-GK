@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { LINKS } from '@/lib/links';
 import type { Locale } from '@/lib/content/types';
 
 const glyphs = 'GK+*01/<>#';
@@ -39,9 +40,9 @@ export function Footer({ locale }: { locale: Locale }) {
     <footer ref={ref} className="footer">
       <div className="footer__top">
         <p>GUSTAVO GIACOIA KUMAGAI · 2026</p>
-        <a href="https://gustavo-giacoia.vercel.app/" target="_blank" rel="noreferrer">{locale === 'pt' ? 'MEU LADO TÉCNICO ↗' : 'MY TECHNICAL SIDE ↗'}</a>
+        <a href={LINKS.portfolio} target="_blank" rel="noreferrer">{locale === 'pt' ? 'MEU LADO TÉCNICO ↗' : 'MY TECHNICAL SIDE ↗'}</a>
       </div>
-      <a className="footer__cta" href="mailto:contato@gusgk.com.br" aria-label={finalText}>
+      <a className="footer__cta" href={LINKS.email} aria-label={finalText}>
         <span aria-hidden="true">{scrambled}</span>
         <i aria-hidden="true">↗</i>
       </a>
